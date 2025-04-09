@@ -4,7 +4,7 @@ import {
   errorHandler, 
   getCredentials, 
   initializeDroppedAssetDataObject 
-} from "../../utils/index";
+} from "../../utils/index.js";
 import { IDroppedAsset } from "../../types/DroppedAssetInterface";
 
 export const handleGetEmoteUnlock = async (req: Request, res: Response) => {
