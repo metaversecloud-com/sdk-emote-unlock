@@ -5,8 +5,11 @@ import {
   handleGetVisitor,
   handleRemoveDroppedAssetsByUniqueName,
   handleGetWorldDetails,
-  handleUpdateWorldDataObject,
-  handleFireToast,
+  handleGetEmoteUnlock,
+  handleEmoteUnlockAttempt,
+  handleEmoteUnlockConfig,
+  handleGetAvailableEmotes,
+  handleTriggerParticle
 } from "./controllers/index.js";
 import { getVersion } from "./utils/getVersion.js";
 
@@ -31,17 +34,22 @@ router.get("/system/health", (req, res) => {
   });
 });
 
-// Dropped Assets
+//dropped Assets
 router.post("/dropped-asset", handleDropAsset);
 router.get("/dropped-asset", handleGetDroppedAsset);
 router.post("/remove-dropped-assets", handleRemoveDroppedAssetsByUniqueName);
 
-// Visitor
+//visitor
 router.get("/visitor", handleGetVisitor);
 
-// World
+//world
 router.get("/world", handleGetWorldDetails);
-router.put("/world/data-object", handleUpdateWorldDataObject);
-router.put("/world/fire-toast", handleFireToast);
+
+//emote unlock
+router.get("/emote-unlock", handleGetEmoteUnlock);
+router.post("/emote-unlock/attempt", handleEmoteUnlockAttempt);
+router.post("/emote-unlock/config", handleEmoteUnlockConfig);
+router.get("/available-emotes", handleGetAvailableEmotes);
+router.post("/trigger-particle", handleTriggerParticle);
 
 export default router;

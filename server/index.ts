@@ -20,7 +20,7 @@ function checkEnvVariables() {
 }
 checkEnvVariables();
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3030;
 const app = express();
 
 app.use(cors());
@@ -41,7 +41,7 @@ if (process.env.NODE_ENV === "development") {
   const __dirname = path.dirname(__filename);
   app.use(express.static(path.resolve(__dirname, "../../client/build")));
 
-  // All other GET requests not handled before will return our React app
+  //all other GET requests not handled before will return our React app
   app.get("*", (req, res) => {
     res.sendFile(path.resolve(__dirname, "../../client/build", "index.html"));
   });

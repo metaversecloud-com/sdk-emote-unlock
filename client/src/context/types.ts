@@ -2,6 +2,7 @@ export const SET_HAS_SETUP_BACKEND = "SET_HAS_SETUP_BACKEND";
 export const SET_INTERACTIVE_PARAMS = "SET_INTERACTIVE_PARAMS";
 export const SET_GAME_STATE = "SET_GAME_STATE";
 export const SET_ERROR = "SET_ERROR";
+export const SET_VISITOR = "SET_VISITOR";
 
 export type InteractiveParams = {
   assetId: string;
@@ -24,7 +25,12 @@ export interface InitialState {
   hasSetupBackend?: boolean;
   profileId?: string;
   sceneDropId?: string;
-  visitor?: { isAdmin: boolean; isInZone: boolean };
+  visitor?: { 
+    isAdmin: boolean; 
+    isInZone: boolean;
+    profileId?: string;
+    dataObject?: any;
+  };
 }
 
 export type ActionType = {
