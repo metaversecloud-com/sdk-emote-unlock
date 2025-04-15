@@ -4,7 +4,7 @@ import {
   Visitor,
   errorHandler, 
   getCredentials 
-} from "../../utils/index";
+} from "../../utils/index.js";
 
 export const handleTriggerParticle = async (req: Request, res: Response) => {
   try {
