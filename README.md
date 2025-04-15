@@ -1,52 +1,51 @@
-# README Template
-
-Please update the following in each of your SDK application.
+# Emote Unlock App
 
 ## Introduction / Summary
 
-This boilerplate is meant to give you a simple starting point to build new features in Topia using our Javascript SDK. Please reference the [documentation](https://metaversecloud-com.github.io/mc-sdk-js/index.html) for a more detailed breakdown of what the SDK is capable of and how to use it!
+The Emote Unlock App allows users to unlock new emotes by completing specific actions or challenges in the world. Admins can configure which emotes are available to unlock and set the conditions for unlocking them. Once unlocked, users can use these emotes to enhance their interaction experience in the world.
 
 ## Key Features
 
 ### Canvas elements & interactions
 
-- Key Asset: When clicked this asset will open the drawer and allow users and admins to start interacting with the app.
+- Key Asset: When clicked, this asset opens the app in the drawer and allows both admins and users to interact with the emote unlock system.
 
 ### Drawer content
 
-- How to play instructions
-- Leaderboard
-- Admin features (see below)
+#### User View:
+
+- Displays available emotes that can be unlocked
+- Shows unlock progress and requirements
+- Provides visual feedback when emotes are successfully unlocked
+- Allows users to view their currently unlocked emotes
+
+#### Admin View:
+
+- Accessible via a settings icon on the main page
+- Contains emote configuration options and admin-specific interactions (see below)
 
 ### Admin features
 
-_Does your app have special admin functionality? If so your key features may looks something like this:_
-
-- Access: Click on the key asset to open the drawer and then select the Admin tab. Any changes you make here will only affect this instance of the application and will not impact other instances dropped in this or other worlds.
-- Theme selection: Use the dropdown to select a theme.
-- Reset: Click on the Reset button to clear the active game state and rebuild the game board in it's default state.
-
-### Themes description
-
-- Winter (default): A snowy theme that when selected will drop snowflakes throughout the scene
-- Spring: A garden theme that when selected will drop flowers throughout the scene
+- Access:
+  - When the admin clicks on the key asset, the app opens in the drawer
+  - A settings icon on the main page leads to the admin configuration page
+- Emote Configuration:
+  - Configure which emotes are available for unlocking
+  - Set unlock conditions and requirements
+  - Manage particle effects for unlock celebrations
+  - View unlock statistics and user progress
 
 ### Data objects
 
-_We use data objects to store information about each implementation of the app per world._
-
 - Key Asset: the data object attached to the dropped key asset will store information related to this specific implementation of the app and would be deleted if the key asset is removed from world. Example data:
-  - isResetInProgress
-  - lastInteraction
-  - lastPlayerTurn
-  - playerCount
-  - resetCount
-  - turnCount
-- World: the data object attached to the world will store analytics information for every instance of the app in a given world by keyAssetId and will persist even if a specific instance is removed from world. Example data:
-  - gamesPlayedByUser (`keyAssets.${assetId}.gamesPlayedByUser.${profileId}.count`)
-  - gamesWonByUser (`keyAssets.${keyAssetId}.gamesWonByUser.${profileId}.count`)
-  - totalGamesResetCount (`keyAssets.${assetId}.totalGamesResetCount`)
-  - totalGamesWonCount (`keyAssets.${assetId}.totalGamesWonCount`)
+  ```typescript
+  {
+    availableEmotes: string[];
+    unlockedEmotes: { [profileId: string]: string[] };
+    unlockConditions: { [emoteId: string]: { condition: string, requirement: any } };
+    particleEffects: { [emoteId: string]: { type: string, config: any } };
+  }
+  ```
 
 ## Developers:
 
