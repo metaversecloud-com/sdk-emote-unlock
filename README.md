@@ -2,7 +2,7 @@
 
 ## Introduction / Summary
 
-The Emote Unlock App allows users to unlock new emotes by completing specific actions or challenges in the world. Admins can configure which emotes are available to unlock and set the conditions for unlocking them. Once unlocked, users can use these emotes to enhance their interaction experience in the world.
+The Emote Unlock App allows users to unlock new emotes by entering the correct password. Admins can configure which emote is available to unlock and set the password required to unlock it. Once unlocked, users can use the emote to enhance their interaction experience in the world.
 
 ## Key Features
 
@@ -14,10 +14,11 @@ The Emote Unlock App allows users to unlock new emotes by completing specific ac
 
 #### User View:
 
-- Displays available emotes that can be unlocked
-- Shows unlock progress and requirements
-- Provides visual feedback when emotes are successfully unlocked
-- Allows users to view their currently unlocked emotes
+- Displays the available emote to unlock with preview image
+- Shows the emote description and unlock requirements
+- Provides a password input field for unlock attempts
+- Shows visual feedback and particle effects on successful unlock
+- Displays unlock statistics (number of users who have unlocked the emote)
 
 #### Admin View:
 
@@ -30,22 +31,46 @@ The Emote Unlock App allows users to unlock new emotes by completing specific ac
   - When the admin clicks on the key asset, the app opens in the drawer
   - A settings icon on the main page leads to the admin configuration page
 - Emote Configuration:
-  - Configure which emotes are available for unlocking
-  - Set unlock conditions and requirements
-  - Manage particle effects for unlock celebrations
+  - Select an emote to make available for unlocking
+  - Set a custom description for the unlock challenge
+  - Set the password required to unlock the emote
   - View unlock statistics and user progress
+  - See list of users who have successfully unlocked the emote
 
 ### Data objects
 
-- Key Asset: the data object attached to the dropped key asset will store information related to this specific implementation of the app and would be deleted if the key asset is removed from world. Example data:
+- Key Asset: the data object attached to the dropped key asset stores information related to this specific implementation of the app. Example data structure:
   ```typescript
   {
-    availableEmotes: string[];
-    unlockedEmotes: { [profileId: string]: string[] };
-    unlockConditions: { [emoteId: string]: { condition: string, requirement: any } };
-    particleEffects: { [emoteId: string]: { type: string, config: any } };
+    unlockData: {
+      emoteId: string; //ID of the emote
+      emoteName: string; //display name of the emote 
+      emotePreviewUrl: string; //URL to the emote's preview image
+      emoteDescription: string; //custom description for the unlock challenge
+      password: string; //required password (only visible to admin)
+      stats: {//good for later use
+        attempts: number; //total number of unlock attempts
+        successfulUnlocks: number; //number of successful unlocks
+        unlockUsers: Array<{
+          //list of users who unlocked the emote
+          visitorId: string;
+          displayName: string;
+          unlockedAt: string;
+        }>;
+      }
+    }
   }
   ```
+
+### Available Emotes
+
+Currently, the following emotes are available for unlocking:
+
+- [under construction]
+
+### Particle Effects
+
+When a user successfully unlocks an emote, a "Sparkle" particle effect is triggered for 3 seconds to celebrate their achievement.
 
 ## Developers:
 
