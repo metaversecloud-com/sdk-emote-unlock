@@ -1,10 +1,5 @@
 import { Request, Response } from "express";
-import { 
-  DroppedAsset, 
-  errorHandler, 
-  getCredentials, 
-  initializeDroppedAssetDataObject 
-} from "../../utils/index";
+import { DroppedAsset, errorHandler, getCredentials, initializeDroppedAssetDataObject } from "../../utils/index.js";
 import { IDroppedAsset } from "../../types/DroppedAssetInterface";
 
 export const handleEmoteUnlockConfig = async (req: Request, res: Response) => {
@@ -12,24 +7,24 @@ export const handleEmoteUnlockConfig = async (req: Request, res: Response) => {
     const credentials = getCredentials(req.query);
     const { assetId, urlSlug } = credentials;
     const { emoteDescription, password } = req.body;
-    
+
     // Basic validation
     if (!password) {
-      return res.status(400).json({ 
-        success: false, 
-        message: "Password is required" 
+      return res.status(400).json({
+        success: false,
+        message: "Password is required",
       });
     }
-    
+
     // Get the asset data
     const droppedAsset = await DroppedAsset.get(assetId, urlSlug, { credentials });
 
     // Initialize data object if needed
     await initializeDroppedAssetDataObject(droppedAsset as IDroppedAsset);
-    
+
     // Get the current data object
     const dataObject = (droppedAsset as any).dataObject || {};
-    
+
     // Reset stats when config changes
     const unlockData = {
       emoteId: "eyes",
@@ -40,23 +35,22 @@ export const handleEmoteUnlockConfig = async (req: Request, res: Response) => {
       stats: {
         attempts: 0,
         successfulUnlocks: 0,
-        unlockUsers: []
-      }
+        unlockUsers: [],
+      },
     };
-    
+
     // Update the data object
     await (droppedAsset as any).setDataObject({
       ...dataObject,
-      unlockData
+      unlockData,
     });
-    
+
     return res.json({
       unlockData: {
-        ...unlockData
+        ...unlockData,
       },
-      success: true
+      success: true,
     });
-    
   } catch (error) {
     return errorHandler({
       error,
@@ -66,4 +60,4 @@ export const handleEmoteUnlockConfig = async (req: Request, res: Response) => {
       res,
     });
   }
-}; 
+};
