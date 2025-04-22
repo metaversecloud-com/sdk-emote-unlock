@@ -92,12 +92,29 @@ export const AdminView = () => {
       return;
     }
 
+    const selectedEmoteObject = availableEmotes.find(e => e.id === selectedEmote);
+    if (!selectedEmoteObject) {
+      window.parent.postMessage({ 
+        type: "showToast", 
+        title: "Error", 
+        description: "Selected emote not found"
+      }, "*");
+      return;
+    }
+
     setIsLoading(true);
     try {
       const response = await backendAPI.post("/emote-unlock/config", {
-        emoteId: selectedEmote,
+        selectedEmote: {
+          id: selectedEmoteObject.id,
+          name: selectedEmoteObject.name,
+          previewUrl: selectedEmoteObject.previewUrl
+        },
         emoteDescription: emoteDescription.trim(),
-        password: password.trim().toLowerCase()
+        unlockCondition: {
+          type: "password",
+          value: password.trim().toLowerCase()
+        }
       });
       
       setGameState(dispatch, response.data);
@@ -123,20 +140,22 @@ export const AdminView = () => {
   };
 
   return (
-    <div className="w-full max-w-3xl mx-auto">
-      {/*<h1 className="text-2xl font-bold mb-6">Admin Settings</h1>*/}
+    <div className="w-full max-w-3xl mx-auto p-6">
       
       {/* Configuration Section */}
-      <div className="mb-8 p-6 bg-white rounded-lg shadow-sm">
-        <h2 className="text-xl font-semibold mb-4">Configuration</h2>
-        <p className="mb-6 text-gray-600">
+      <div className="mb-8 p-8 bg-white rounded-lg shadow-sm">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-xl font-semibold">Configuration</h2>
+        </div>
+        <p className="mb-8 text-gray-600">
           Allow users to unlock an emote when they successfully answer a question or enter the correct password.
         </p>
         
-        <div className="space-y-6">
+        <div className="space-y-8">
           {/* Emote Selection */}
           <div>
-            <label className="block text-sm font-medium mb-2">Choose an emote to unlock</label>
+            <h3 className="text-md font-semibold mb-1">Emote Selection</h3>
+            <p className="text-sm text-gray-600 mb-3">Choose an emote to unlock for your visitors</p>
             
             {emotesFetchError ? (
               <div className="text-red-500 mb-2">{emotesFetchError}</div>
@@ -145,7 +164,7 @@ export const AdminView = () => {
             <select 
               value={selectedEmote}
               onChange={(e) => setSelectedEmote(e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded-md"
+              className="w-full p-3 border border-gray-300 rounded-md"
               disabled={isLoading || availableEmotes.length === 0}
             >
               <option value="">Select an emote</option>
@@ -157,13 +176,13 @@ export const AdminView = () => {
             </select>
             
             {availableEmotes.length === 0 && !emotesFetchError && !isLoading && (
-              <p className="text-amber-600 text-sm mt-1">No unlockable emotes found. Please contact support.</p>
+              <p className="text-amber-600 text-sm mt-2">No unlockable emotes found. Please contact support.</p>
             )}
           </div>
           
           {/* Preview if emote selected */}
           {selectedEmote && availableEmotes.length > 0 && (
-            <div className="flex items-center space-x-4 p-3 bg-gray-50 rounded-lg">
+            <div className="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg">
               <div className="w-24 h-24 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden">
                 <img 
                   src={availableEmotes.find(e => e.id === selectedEmote)?.previewUrl || ""}
@@ -182,31 +201,44 @@ export const AdminView = () => {
           
           {/* Description */}
           <div>
-            <label className="block text-sm font-medium mb-2">
+            <h3 className="text-md font-semibold mb-1">Question/Description</h3>
+            <p className="text-sm text-gray-600 mb-3">
               Enter a description or question to prompt users to the correct answer
-            </label>
+            </p>
             <textarea
               value={emoteDescription}
               onChange={(e) => setEmoteDescription(e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded-md min-h-[100px]"
-              placeholder="Example: were you naughty before Christmas?"
+              className="w-full p-3 border border-gray-300 rounded-md min-h-[100px]"
+              placeholder="Example: Were you naughty before Christmas?"
               disabled={isLoading}
             ></textarea>
           </div>
           
           {/* Password */}
           <div>
-            <label className="block text-sm font-medium mb-2">
+            <h3 className="text-md font-semibold mb-1">Password/Answer</h3>
+            <p className="text-sm text-gray-600 mb-3">
               Choose a password or answer. We recommend 1-2 words. Answers are not case sensitive.
-            </label>
+            </p>
             <input
               type="text"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded-md"
-              placeholder="Example: i was a bad boy"
+              className="w-full p-3 border border-gray-300 rounded-md"
+              placeholder="Example: I was a bad boy"
               disabled={isLoading}
             />
+          </div>
+          
+          {/* Save Button */}
+          <div className="pt-4">
+            <button
+              onClick={handleSave}
+              disabled={isLoading}
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-md transition duration-150 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isLoading ? "Saving..." : "Save Configuration"}
+            </button>
           </div>
         </div>
       </div>
@@ -214,7 +246,7 @@ export const AdminView = () => {
       {/* Engagement Section */}
       <div className="mb-8">
         <button 
-          className="flex items-center justify-between w-full p-4 bg-white rounded-lg shadow-sm"
+          className="flex items-center justify-between w-full p-5 bg-white rounded-lg shadow-sm"
           onClick={() => setShowEngagement(!showEngagement)}
         >
           <h2 className="text-xl font-semibold">Engagement</h2>
@@ -257,16 +289,6 @@ export const AdminView = () => {
           </div>
         )}
       </div>
-      
-      <PageFooter>
-        <button 
-          className="btn btn-primary" 
-          disabled={isLoading} 
-          onClick={handleSave}
-        >
-          {isLoading ? "Saving..." : "Save Configuration"}
-        </button>
-      </PageFooter>
     </div>
   );
 };

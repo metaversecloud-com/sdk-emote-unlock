@@ -1,76 +1,52 @@
-# Emote Unlock App
+# README Template
+
+Please update the following in each of your SDK application.
 
 ## Introduction / Summary
 
-The Emote Unlock App allows users to unlock new emotes by entering the correct password. Admins can configure which emote is available to unlock and set the password required to unlock it. Once unlocked, users can use the emote to enhance their interaction experience in the world.
+This boilerplate is meant to give you a simple starting point to build new features in Topia using our Javascript SDK. Please reference the [documentation](https://metaversecloud-com.github.io/mc-sdk-js/index.html) for a more detailed breakdown of what the SDK is capable of and how to use it!
 
 ## Key Features
 
 ### Canvas elements & interactions
 
-- Key Asset: When clicked, this asset opens the app in the drawer and allows both admins and users to interact with the emote unlock system.
+- Key Asset: When clicked this asset will open the drawer and allow users and admins to start interacting with the app.
 
 ### Drawer content
 
-#### User View:
-
-- Displays the available emote to unlock with preview image
-- Shows the emote description and unlock requirements
-- Provides a password input field for unlock attempts
-- Shows visual feedback and particle effects on successful unlock
-- Displays unlock statistics (number of users who have unlocked the emote)
-
-#### Admin View:
-
-- Accessible via a settings icon on the main page
-- Contains emote configuration options and admin-specific interactions (see below)
+- How to play instructions
+- Leaderboard
+- Admin features (see below)
 
 ### Admin features
 
-- Access:
-  - When the admin clicks on the key asset, the app opens in the drawer
-  - A settings icon on the main page leads to the admin configuration page
-- Emote Configuration:
-  - Select an emote to make available for unlocking
-  - Set a custom description for the unlock challenge
-  - Set the password required to unlock the emote
-  - View unlock statistics and user progress
-  - See list of users who have successfully unlocked the emote
+_Does your app have special admin functionality? If so your key features may looks something like this:_
+
+- Access: Click on the key asset to open the drawer and then select the Admin tab. Any changes you make here will only affect this instance of the application and will not impact other instances dropped in this or other worlds.
+- Theme selection: Use the dropdown to select a theme.
+- Reset: Click on the Reset button to clear the active game state and rebuild the game board in it's default state.
+
+### Themes description
+
+- Winter (default): A snowy theme that when selected will drop snowflakes throughout the scene
+- Spring: A garden theme that when selected will drop flowers throughout the scene
 
 ### Data objects
 
-- Key Asset: the data object attached to the dropped key asset stores information related to this specific implementation of the app. Example data structure:
-  ```typescript
-  {
-    unlockData: {
-      emoteId: string; //ID of the emote
-      emoteName: string; //display name of the emote 
-      emotePreviewUrl: string; //URL to the emote's preview image
-      emoteDescription: string; //custom description for the unlock challenge
-      password: string; //required password (only visible to admin)
-      stats: {//good for later use
-        attempts: number; //total number of unlock attempts
-        successfulUnlocks: number; //number of successful unlocks
-        unlockUsers: Array<{
-          //list of users who unlocked the emote
-          visitorId: string;
-          displayName: string;
-          unlockedAt: string;
-        }>;
-      }
-    }
-  }
-  ```
+_We use data objects to store information about each implementation of the app per world._
 
-### Available Emotes
-
-Currently, the following emotes are available for unlocking:
-
-- [under construction]
-
-### Particle Effects
-
-When a user successfully unlocks an emote, a "Sparkle" particle effect is triggered for 3 seconds to celebrate their achievement.
+- Key Asset: the data object attached to the dropped key asset will store information related to this specific implementation of the app and would be deleted if the key asset is removed from world. Example data:
+  - isResetInProgress
+  - lastInteraction
+  - lastPlayerTurn
+  - playerCount
+  - resetCount
+  - turnCount
+- World: the data object attached to the world will store analytics information for every instance of the app in a given world by keyAssetId and will persist even if a specific instance is removed from world. Example data:
+  - gamesPlayedByUser (`keyAssets.${assetId}.gamesPlayedByUser.${profileId}.count`)
+  - gamesWonByUser (`keyAssets.${keyAssetId}.gamesWonByUser.${profileId}.count`)
+  - totalGamesResetCount (`keyAssets.${assetId}.totalGamesResetCount`)
+  - totalGamesWonCount (`keyAssets.${assetId}.totalGamesWonCount`)
 
 ## Developers:
 

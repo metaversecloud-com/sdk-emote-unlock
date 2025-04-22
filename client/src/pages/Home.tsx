@@ -38,18 +38,13 @@ const Home = () => {
 
   return (
     <PageContainer isLoading={isLoading}>
-      <>
+      <div className="relative w-full">
         {visitor?.isAdmin && (
-          <div className="mb-6 flex flex-col items-center w-full">
-            <div className="flex items-center gap-2">
-              <AdminIconButton
-                setShowSettings={() => setShowSettings(!showSettings)}
-                showSettings={showSettings}
-              />
-              <span className="bg-gray-100 px-3 py-1 rounded text-sm font-medium">
-                {visitor?.isAdmin ? "this might be admin..." : "this might not be admin..."}
-              </span>
-            </div>
+          <div className="absolute top-0 right-0 z-10">
+            <AdminIconButton
+              setShowSettings={() => setShowSettings(!showSettings)}
+              showSettings={showSettings}
+            />
           </div>
         )}
         
@@ -58,7 +53,7 @@ const Home = () => {
         ) : (
           <EmoteUnlockView />
         )}
-      </>
+      </div>
     </PageContainer>
   );
 };

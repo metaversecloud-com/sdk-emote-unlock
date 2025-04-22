@@ -94,7 +94,8 @@ const EmoteUnlockView = () => {
         // Clear password field
         setPassword("");
       } else {
-        setError("Oops! That's not right. Try again!");
+        // Display custom message from server if provided, otherwise show default message
+        setError(response.data.message || "Oops! That's not right. Try again!");
       }
     } catch (error: any) {
       setErrorMessage(dispatch, error);
@@ -113,10 +114,10 @@ const EmoteUnlockView = () => {
   const renderUnlockUI = () => {
     if (isAlreadyUnlocked) {
       return (
-        <div className="text-center p-6 bg-green-50 rounded-lg border border-green-100">
-          <div className="text-3xl mb-2">🎉</div>
-          <h3 className="text-xl font-semibold mb-2">Emote Already Unlocked!</h3>
-          <p className="text-gray-600">
+        <div className="text-center py-10 px-6 bg-green-50 rounded-lg border border-green-100">
+          <div className="text-6xl mb-4">🎉</div>
+          <h3 className="text-2xl font-semibold mb-3">Emote Already Unlocked!</h3>
+          <p className="text-gray-600 text-lg">
             You've already unlocked this emote. Click on your avatar to use it!
           </p>
         </div>
@@ -125,10 +126,10 @@ const EmoteUnlockView = () => {
     
     if (showSuccess) {
       return (
-        <div className="text-center p-6 bg-green-50 rounded-lg border border-green-100">
-          <div className="text-3xl mb-2">no particles yet...</div>
-          <h3 className="text-xl font-semibold mb-2">Emote Unlocked!</h3>
-          <p className="text-gray-600">
+        <div className="text-center py-10 px-6 bg-green-50 rounded-lg border border-green-100">
+          <div className="text-6xl mb-4">🎉</div>
+          <h3 className="text-2xl font-semibold mb-3">Emote Unlocked!</h3>
+          <p className="text-gray-600 text-lg">
             Congratulations! You've unlocked a new emote. Click on your avatar to try it out!
           </p>
         </div>
@@ -137,19 +138,19 @@ const EmoteUnlockView = () => {
     
     return (
       <div className="w-full">
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-5">
           <input
             type="text"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Enter password..."
-            className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="px-5 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg"
             disabled={isSubmitting}
           />
           
           <button
-            className="btn btn-primary w-full py-2"
+            className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-5 rounded-lg transition duration-150 ease-in-out disabled:opacity-50"
             onClick={handleUnlockAttempt}
             disabled={isSubmitting}
           >
@@ -158,7 +159,7 @@ const EmoteUnlockView = () => {
         </div>
         
         {error && (
-          <div className="mt-4 text-red-500 text-center">
+          <div className="mt-5 text-red-500 text-center text-lg">
             {error}
           </div>
         )}
@@ -167,29 +168,33 @@ const EmoteUnlockView = () => {
   };
 
   return (
-    <div className="flex flex-col items-center w-full max-w-md mx-auto">
-      <div className="mb-6 text-center">
-        <h1 className="text-2xl font-bold mb-4">Emote Unlock Challenge</h1>
+    <div className="flex flex-col items-center w-full max-w-md mx-auto p-6">
+      <div className="mb-8 text-center">
+        <h1 className="text-3xl font-bold mb-6">Emote Unlock Challenge</h1>
         
         {typedGameState?.unlockData?.emotePreviewUrl ? (
-          <div className="mb-6">
+          <div className="mb-8">
             <img 
               src={typedGameState.unlockData.emotePreviewUrl} 
               alt="Emote preview"
-              className="w-40 h-40 object-contain mx-auto mb-2" 
+              className="w-48 h-48 object-contain mx-auto mb-4" 
             />
-            <h2 className="text-xl font-semibold">{typedGameState.unlockData.emoteName || "Mystery Emote"}</h2>
+            <h2 className="text-2xl font-semibold">{typedGameState.unlockData.emoteName || "Mystery Emote"}</h2>
           </div>
         ) : (
-          <div className="mb-6">
-            <div className="w-40 h-40 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-2">
-              <img src="https://sdk-style.s3.amazonaws.com/icons/lock.svg" alt="Locked" className="w-16 h-16" />
+          <div className="mb-8">
+            <div className="w-48 h-48 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-4">
+              <img 
+                src="https://sdk-style.s3.amazonaws.com/icons/lock.svg" 
+                alt="Mystery Emote" 
+                className="w-20 h-20" 
+              />
             </div>
-            <h2 className="text-xl font-semibold">Mystery Emote</h2>
+            <h2 className="text-2xl font-semibold">Mystery Emote</h2>
           </div>
         )}
         
-        <p className="text-lg mb-6">
+        <p className="text-xl mb-8 px-4">
           {typedGameState?.unlockData?.emoteDescription || "Enter the correct password to unlock a special emote!"}
         </p>
       </div>
@@ -197,7 +202,7 @@ const EmoteUnlockView = () => {
       {renderUnlockUI()}
 
       {typedGameState?.unlockData?.stats && (
-        <div className="mt-8 text-sm text-center text-gray-500">
+        <div className="mt-10 text-sm text-center text-gray-500">
           <p>{typedGameState.unlockData.stats.successfulUnlocks || 0} users have unlocked this emote</p>
         </div>
       )}
