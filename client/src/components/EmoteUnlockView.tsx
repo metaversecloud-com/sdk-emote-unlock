@@ -1,6 +1,6 @@
 import { useState, useContext, useEffect, KeyboardEvent } from "react";
 import { GlobalStateContext, GlobalDispatchContext } from "@/context/GlobalContext";
-import { backendAPI, setErrorMessage } from "@/utils";
+import { backendAPI, setErrorMessage, setGameState } from "@/utils";
 
 interface GameState {
   unlockData?: {
@@ -32,12 +32,57 @@ const EmoteUnlockView = () => {
   
   const typedGameState = gameState as GameState;
 
-  // Check if emote is already unlocked on initial load
+  //fetch emote unlock data and check if already unlocked on initial load
   useEffect(() => {
-    if (typedGameState?.isEmoteUnlocked) {
-      setIsAlreadyUnlocked(true);
-    }
-  }, [typedGameState]);
+    const fetchEmoteData = async () => {
+      try {
+        //fetch the latest emote unlock data
+        const response = await backendAPI.get("/emote-unlock");
+        
+        //debug: log the response data
+        console.log("DEBUG - Emote data from server:", response.data);
+        
+        if (response.data.success) {
+          //extract important data for readability and debugging
+          const { unlockData, isEmoteUnlocked } = response.data;
+          
+          //log specific fields we care about
+          console.log("Received emote description:", unlockData?.emoteDescription);
+          console.log("Received emote name:", unlockData?.emoteName);
+          
+          //create a complete game state update
+          const updatedGameState = {
+            unlockData,
+            isEmoteUnlocked
+          };
+          
+          console.log("Updating game state with:", updatedGameState);
+          
+          //store the description directly on the state as a backup
+          const stateWithBackup = {
+            ...updatedGameState,
+            emoteDescription: unlockData?.emoteDescription
+          };
+          
+          //update the global state with the fetched data
+          setGameState(dispatch, stateWithBackup);
+          
+          if (isEmoteUnlocked) {
+            setIsAlreadyUnlocked(true);
+          }
+          
+          //also save the description in localstorage as a last resort
+          if (unlockData?.emoteDescription) {
+            localStorage.setItem('emoteDescription', unlockData.emoteDescription);
+          }
+        }
+      } catch (error) {
+        console.error("Failed to fetch emote unlock data:", error);
+      }
+    };
+    
+    fetchEmoteData();
+  }, []); //run once on component mount
 
   const handleUnlockAttempt = async () => {
     if (!password.trim()) {
@@ -54,7 +99,7 @@ const EmoteUnlockView = () => {
       });
 
       if (response.data.success) {
-        // Trigger particle effect on success
+        //trigger particle effect on success
         try {
           await backendAPI.post("/trigger-particle", {
             name: "Sparkle",
@@ -64,7 +109,7 @@ const EmoteUnlockView = () => {
           console.error("Failed to trigger particle effect", err);
         }
 
-        // Check if already unlocked
+        //check if already unlocked
         if (response.data.alreadyUnlocked) {
           setIsAlreadyUnlocked(true);
           window.parent.postMessage({ 
@@ -80,21 +125,21 @@ const EmoteUnlockView = () => {
             description: "You just unlocked a new emote! Click on your avatar to test it out."
           }, "*");
           
-          // Refresh game state to update UI
+          //refresh game state to update ui
           try {
             const refreshResponse = await backendAPI.get("/emote-unlock");
             if (refreshResponse.data.success) {
-              // Update game state
+              //update game state
             }
           } catch (refreshError) {
             console.error("Failed to refresh state", refreshError);
           }
         }
         
-        // Clear password field
+        //clear password field
         setPassword("");
       } else {
-        // Display custom message from server if provided, otherwise show default message
+        //display custom message from server if provided, otherwise show default message
         setError(response.data.message || "Oops! That's not right. Try again!");
       }
     } catch (error: any) {
@@ -111,31 +156,19 @@ const EmoteUnlockView = () => {
     }
   };
   
-  const renderUnlockUI = () => {
-    if (isAlreadyUnlocked) {
-      return (
-        <div className="text-center py-10 px-6 bg-green-50 rounded-lg border border-green-100">
-          <div className="text-6xl mb-4">🎉</div>
-          <h3 className="text-2xl font-semibold mb-3">Emote Already Unlocked!</h3>
-          <p className="text-gray-600 text-lg">
-            You've already unlocked this emote. Click on your avatar to use it!
-          </p>
-        </div>
-      );
-    }
-    
-    if (showSuccess) {
-      return (
-        <div className="text-center py-10 px-6 bg-green-50 rounded-lg border border-green-100">
-          <div className="text-6xl mb-4">🎉</div>
-          <h3 className="text-2xl font-semibold mb-3">Emote Unlocked!</h3>
-          <p className="text-gray-600 text-lg">
-            Congratulations! You've unlocked a new emote. Click on your avatar to try it out!
-          </p>
-        </div>
-      );
-    }
-    
+  const renderUnlockSuccess = () => {
+    return (
+      <div className="text-center py-10 px-6 bg-green-50 rounded-lg border border-green-100">
+        <div className="text-6xl mb-4">🎉</div>
+        <h3 className="text-2xl font-semibold mb-3">Emote Already Unlocked!</h3>
+        <p className="text-gray-600 text-lg">
+          You've already unlocked this emote. Click on your avatar to use it!
+        </p>
+      </div>
+    );
+  };
+  
+  const renderPasswordInput = () => {
     return (
       <div className="w-full">
         <div className="flex flex-col gap-5">
@@ -144,7 +177,7 @@ const EmoteUnlockView = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Enter password..."
+            placeholder="Enter answer..."
             className="px-5 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg"
             disabled={isSubmitting}
           />
@@ -165,6 +198,26 @@ const EmoteUnlockView = () => {
         )}
       </div>
     );
+  };
+  
+  const renderUnlockUI = () => {
+    if (isAlreadyUnlocked) {
+      return renderUnlockSuccess();
+    }
+    
+    if (showSuccess) {
+      return (
+        <div className="text-center py-10 px-6 bg-green-50 rounded-lg border border-green-100">
+          <div className="text-6xl mb-4">🎉</div>
+          <h3 className="text-2xl font-semibold mb-3">Emote Unlocked!</h3>
+          <p className="text-gray-600 text-lg">
+            Congratulations! You've unlocked a new emote. Click on your avatar to try it out!
+          </p>
+        </div>
+      );
+    }
+    
+    return renderPasswordInput();
   };
 
   return (
@@ -194,8 +247,26 @@ const EmoteUnlockView = () => {
           </div>
         )}
         
+        {/* debug: log the description value */}
+        {console.log("Description from state:", typedGameState?.unlockData?.emoteDescription)}
+        
         <p className="text-xl mb-8 px-4">
-          {typedGameState?.unlockData?.emoteDescription || "Enter the correct password to unlock a special emote!"}
+          {/* directly check for description in multiple places and log everything */}
+          {(() => {
+            // log the entire state for debugging
+            console.log("FULL GAME STATE:", gameState);
+            
+            // try to get description from various places
+            const description = 
+              typedGameState?.unlockData?.emoteDescription || 
+              gameState?.unlockData?.emoteDescription ||
+              (gameState as any)?.emoteDescription ||
+              localStorage.getItem('emoteDescription');
+              
+            console.log("Final description to display:", description);
+            
+            return description || "Question/Description: Enter the correct answer to unlock this emote!";
+          })()}
         </p>
       </div>
 

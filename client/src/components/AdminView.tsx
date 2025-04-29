@@ -1,12 +1,12 @@
 import { useState, useContext, useEffect } from "react";
 
-// components
+//components
 import { PageFooter } from "@/components";
 
-// context
+//context
 import { GlobalStateContext, GlobalDispatchContext } from "@/context/GlobalContext";
 
-// utils
+//utils
 import { backendAPI, setErrorMessage, setGameState } from "@/utils";
 
 interface GameState {
@@ -43,13 +43,13 @@ export const AdminView = () => {
   const [showEngagement, setShowEngagement] = useState(false);
   const [emotesFetchError, setEmotesFetchError] = useState("");
   
-  // Form fields
+  //form fields
   const [selectedEmote, setSelectedEmote] = useState("");
   const [emoteDescription, setEmoteDescription] = useState("");
   const [password, setPassword] = useState("");
   const [availableEmotes, setAvailableEmotes] = useState<Emote[]>([]);
 
-  // Load current settings and available emotes
+  //load current settings and available emotes
   useEffect(() => {
     const fetchEmotes = async () => {
       try {
@@ -65,7 +65,7 @@ export const AdminView = () => {
         
         setAvailableEmotes(response.data.emotes || []);
         
-        // Set current values if they exist
+        //set current values if they exist
         if (typedGameState?.unlockData) {
           setSelectedEmote(typedGameState.unlockData.emoteId || "");
           setEmoteDescription(typedGameState.unlockData.emoteDescription || "");
@@ -125,7 +125,7 @@ export const AdminView = () => {
         description: "The emote unlock has been configured successfully"
       }, "*");
       
-      // Reset engagement data visibility after save
+      //reset engagement data visibility after save
       setShowEngagement(false);
     } catch (error: any) {
       window.parent.postMessage({ 
@@ -142,7 +142,7 @@ export const AdminView = () => {
   return (
     <div className="w-full max-w-3xl mx-auto p-6">
       
-      {/* Configuration Section */}
+      {/* configuration section */}
       <div className="mb-8 p-8 bg-white rounded-lg shadow-sm">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl font-semibold">Configuration</h2>
@@ -152,7 +152,7 @@ export const AdminView = () => {
         </p>
         
         <div className="space-y-8">
-          {/* Emote Selection */}
+          {/* emote selection */}
           <div>
             <h3 className="text-md font-semibold mb-1">Emote Selection</h3>
             <p className="text-sm text-gray-600 mb-3">Choose an emote to unlock for your visitors</p>
@@ -180,7 +180,7 @@ export const AdminView = () => {
             )}
           </div>
           
-          {/* Preview if emote selected */}
+          {/* preview if emote selected */}
           {selectedEmote && availableEmotes.length > 0 && (
             <div className="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg">
               <div className="w-24 h-24 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden">
@@ -199,7 +199,7 @@ export const AdminView = () => {
             </div>
           )}
           
-          {/* Description */}
+          {/* description */}
           <div>
             <h3 className="text-md font-semibold mb-1">Question/Description</h3>
             <p className="text-sm text-gray-600 mb-3">
@@ -214,7 +214,7 @@ export const AdminView = () => {
             ></textarea>
           </div>
           
-          {/* Password */}
+          {/* password */}
           <div>
             <h3 className="text-md font-semibold mb-1">Password/Answer</h3>
             <p className="text-sm text-gray-600 mb-3">
@@ -230,7 +230,7 @@ export const AdminView = () => {
             />
           </div>
           
-          {/* Save Button */}
+          {/* save button */}
           <div className="pt-4">
             <button
               onClick={handleSave}
@@ -243,48 +243,83 @@ export const AdminView = () => {
         </div>
       </div>
       
-      {/* Engagement Section */}
+      {/* engagement section */}
       <div className="mb-8">
         <button 
           className="flex items-center justify-between w-full p-5 bg-white rounded-lg shadow-sm"
-          onClick={() => setShowEngagement(!showEngagement)}
+          onClick={() => {
+            console.log("Toggling engagement view. Current game state:", typedGameState);
+            setShowEngagement(!showEngagement);
+          }}
         >
           <h2 className="text-xl font-semibold">Engagement</h2>
           <span>{showEngagement ? "▲" : "▼"}</span>
         </button>
         
-        {showEngagement && typedGameState?.unlockData?.stats && (
+        {showEngagement && (
           <div className="p-6 bg-white rounded-b-lg shadow-sm border-t">
-            <div className="grid grid-cols-2 gap-6 mb-6">
-              <div className="text-center p-4 bg-gray-50 rounded-lg">
-                <div className="text-3xl font-bold mb-1">
-                  {typedGameState.unlockData.stats.attempts || 0}
+            {typedGameState?.unlockData ? (
+              <>
+                {/*current configuration summary*/}
+                <div className="mb-6 p-4 bg-blue-50 rounded-lg">
+                  <h3 className="text-lg font-medium mb-3">Current Configuration</h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="bg-white p-3 rounded-lg shadow-sm">
+                      <div className="text-sm text-gray-500">Emote</div>
+                      <div className="font-medium">{typedGameState.unlockData.emoteName || "Not set"}</div>
+                    </div>
+                    <div className="bg-white p-3 rounded-lg shadow-sm">
+                      <div className="text-sm text-gray-500">Password</div>
+                      <div className="font-medium font-mono">{typedGameState.unlockData.password || "Not set"}</div>
+                    </div>
+                    <div className="col-span-2 bg-white p-3 rounded-lg shadow-sm">
+                      <div className="text-sm text-gray-500">Description</div>
+                      <div className="text-gray-700">{typedGameState.unlockData.emoteDescription || "No description"}</div>
+                    </div>
+                  </div>
                 </div>
-                <div className="text-sm text-gray-600">Users who attempted</div>
-              </div>
-              <div className="text-center p-4 bg-gray-50 rounded-lg">
-                <div className="text-3xl font-bold mb-1">
-                  {typedGameState.unlockData.stats.successfulUnlocks || 0}
-                </div>
-                <div className="text-sm text-gray-600">Users who successfully unlocked</div>
-              </div>
-            </div>
-            
-            {typedGameState.unlockData.stats.unlockUsers && typedGameState.unlockData.stats.unlockUsers.length > 0 ? (
-              <div>
-                <h3 className="text-lg font-medium mb-3">Users who unlocked this emote</h3>
-                <div className="max-h-40 overflow-y-auto bg-gray-50 rounded-lg p-2">
-                  <ul className="divide-y divide-gray-200">
-                    {typedGameState.unlockData.stats.unlockUsers.map((user, index) => (
-                      <li key={index} className="py-2 px-1">
-                        {user.displayName}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
+                
+                {typedGameState.unlockData.stats && (
+                  <>
+                    <div className="grid grid-cols-2 gap-6 mb-6">
+                      <div className="text-center p-4 bg-gray-50 rounded-lg">
+                        <div className="text-3xl font-bold mb-1">
+                          {typedGameState.unlockData.stats.attempts || 0}
+                        </div>
+                        <div className="text-sm text-gray-600">Users who attempted</div>
+                      </div>
+                      <div className="text-center p-4 bg-gray-50 rounded-lg">
+                        <div className="text-3xl font-bold mb-1">
+                          {typedGameState.unlockData.stats.successfulUnlocks || 0}
+                        </div>
+                        <div className="text-sm text-gray-600">Users who successfully unlocked</div>
+                      </div>
+                    </div>
+                  
+                    {typedGameState.unlockData.stats.unlockUsers && typedGameState.unlockData.stats.unlockUsers.length > 0 ? (
+                      <div>
+                        <h3 className="text-lg font-medium mb-3">Users who unlocked this emote</h3>
+                        <div className="max-h-40 overflow-y-auto bg-gray-50 rounded-lg p-2">
+                          <ul className="divide-y divide-gray-200">
+                            {typedGameState.unlockData.stats.unlockUsers.map((user, index) => (
+                              <li key={index} className="py-2 px-1">
+                                <span className="font-medium">{user.displayName}</span>
+                                <span className="text-xs text-gray-500 ml-2">
+                                  {new Date(user.unlockedAt).toLocaleString()}
+                                </span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
+                    ) : (
+                      <p className="text-center text-gray-500">No users have unlocked this emote yet</p>
+                    )}
+                  </>
+                )}
+              </>
             ) : (
-              <p className="text-center text-gray-500">No users have unlocked this emote yet</p>
+              <p className="text-center text-gray-500 py-4">No configuration data available. Please save a configuration first.</p>
             )}
           </div>
         )}

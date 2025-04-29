@@ -27,7 +27,7 @@ export const handleGrantExpression = async (req: Request, res: Response) => {
     const { visitorId, urlSlug, displayName } = credentials;
 
     try {
-      // Get the visitor
+      //get the visitor to grant the expression
       const visitor = await Visitor.get(visitorId, urlSlug, { credentials });
 
       // Get the unlock data from the world data object instead
@@ -43,7 +43,7 @@ export const handleGrantExpression = async (req: Request, res: Response) => {
         });
       }
 
-      // Check if user has already unlocked
+      //check if user has already unlocked to prevent double granting
       const hasUnlocked = unlockData.stats.unlockUsers.some(user => user.visitorId === visitorId.toString());
       if (hasUnlocked) {
         return res.json({
@@ -53,12 +53,12 @@ export const handleGrantExpression = async (req: Request, res: Response) => {
         });
       }
 
-      // Grant the expression using the stored ID
+      //using the stored id, grant the expressio
       await visitor.grantExpression({ 
         id: unlockData.emoteId 
       });
 
-      // Update stats
+      //update stats - TODO: make use of the stats object
       unlockData.stats.successfulUnlocks += 1;
       unlockData.stats.unlockUsers.push({
         visitorId: visitorId.toString(),
@@ -72,7 +72,7 @@ export const handleGrantExpression = async (req: Request, res: Response) => {
         value: unlockData
       });
 
-      // Try to trigger particle effect
+      //try to trigger particle effect: TODO: make use of the particle effect since it doesn't work...
       try {
         await visitor.triggerParticle({ 
           name: "Sparkle", 

@@ -221,6 +221,17 @@ export const handleEmoteUnlockAttempt = async (req: Request, res: Response) => {
         }
       });
       
+      // Log incorrect password attempt and correct password for testing purposes
+      console.log("Incorrect password attempt:", {
+        enteredPassword: password.trim().toLowerCase(),
+        correctPassword: unlockData.password.trim().toLowerCase(),
+        userDisplayName: displayName,
+        visitorId,
+        emoteDescription: unlockData.emoteDescription || "No description set",
+        emoteId: unlockData.emoteId,
+        emoteName: unlockData.emoteName
+      });
+      
       return res.json({
         success: false,
         message: "Incorrect password"

@@ -54,6 +54,9 @@ export const handleEmoteUnlockConfig = async (req: Request, res: Response) => {
         }
       };
 
+      // Debug: log the data being saved
+      console.log("Saving emote config with description:", emoteDescription);
+
       // Set data object with a unique lockId to prevent race conditions
       const lockId = `${urlSlug}-${new Date().getTime()}`;
       await world.setDataObject({ unlockData }, { 
@@ -63,7 +66,9 @@ export const handleEmoteUnlockConfig = async (req: Request, res: Response) => {
         }
       });
 
+      // Return the updated data in the response
       return res.json({
+        unlockData,
         success: true,
         message: "Emote unlock configuration saved successfully"
       });
