@@ -44,8 +44,8 @@ export const handleEmoteUnlockConfig = async (req: Request, res: Response) => {
       const unlockData: EmoteUnlockConfig = {
         emoteId: selectedEmote.id,
         emoteName: selectedEmote.name,
-        emoteDescription: emoteDescription || "",
-        emotePreviewUrl: selectedEmote.previewUrl || `https://sdk-style.s3.amazonaws.com/icons/${selectedEmote.name.toLowerCase()}.svg`,
+        emoteDescription: selectedEmote.description || emoteDescription,
+        emotePreviewUrl: selectedEmote.previewUrl || `/default-emote-icon.svg`,
         password: unlockCondition.value.toString().trim().toLowerCase(),
         stats: {
           attempts: 0,

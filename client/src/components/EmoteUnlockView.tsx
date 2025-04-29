@@ -238,7 +238,7 @@ const EmoteUnlockView = () => {
           <div className="mb-8">
             <div className="w-48 h-48 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-4">
               <img 
-                src="https://sdk-style.s3.amazonaws.com/icons/lock.svg" 
+                src="/default-emote-icon.svg" 
                 alt="Mystery Emote" 
                 className="w-20 h-20" 
               />

@@ -23,7 +23,8 @@ export const handleGetAvailableEmotes = async (req: Request, res: Response) => {
       const emotes = availableExpressions.map(expression => ({
         id: expression.id,
         name: expression.name,
-        previewUrl: expression.previewUrl || `https://sdk-style.s3.amazonaws.com/icons/${expression.name.toLowerCase()}.svg`
+        type: expression.type, 
+        previewUrl: expression.previewUrl || `/default-emote-icon.svg`
       }));
       
       return res.json({
