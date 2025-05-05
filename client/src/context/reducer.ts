@@ -5,6 +5,7 @@ import {
   SET_GAME_STATE,
   SET_HAS_SETUP_BACKEND,
   SET_INTERACTIVE_PARAMS,
+  SET_VISITOR
 } from "./types";
 
 const globalReducer = (state: InitialState, action: ActionType) => {
@@ -34,7 +35,11 @@ const globalReducer = (state: InitialState, action: ActionType) => {
         ...state,
         error: payload?.error,
       };
-
+    case SET_VISITOR:
+      return {
+        ...state,
+        visitor: payload.visitor,
+      };
     default: {
       throw new Error(`Unhandled action type: ${type}`);
     }

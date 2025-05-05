@@ -1,14 +1,15 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
-import path from "path";
+import * as path from "path";
 // https://vitejs.dev/config/
 
 export default defineConfig({
   plugins: [react()],
   server: {
     port: 3001,
+    strictPort: true,
     proxy: {
-      "/api": "http://localhost:3000/",
+      "/api": "http://localhost:3030/",
     },
   },
   build: {

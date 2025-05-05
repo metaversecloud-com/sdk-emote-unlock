@@ -8,7 +8,7 @@ type SSAEvent = {
   urlSlug: string;
 };
 
-// Configure the Google Sheets client
+//configure the google sheets client
 const privateKey = process.env.GOOGLESHEETS_PRIVATE_KEY?.replace(/\\n/g, "\n");
 
 const auth = new JWT({
@@ -21,7 +21,7 @@ const sheetsClient = sheets.sheets({ version: "v4", auth });
 
 export const addNewRowToGoogleSheets = async (SSAEvents: SSAEvent[]) => {
   try {
-    // Only execute this function if we have GOOGLESHEETS_SHEET_ID in the environment variables.
+    //only execute this function if we have GOOGLESHEETS_SHEET_ID in the environment variables.
     if (!process.env.GOOGLESHEETS_SHEET_ID) return;
 
     const data = [];

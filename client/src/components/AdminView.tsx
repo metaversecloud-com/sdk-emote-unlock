@@ -1,26 +1,329 @@
-import { useState } from "react";
+import { useState, useContext, useEffect } from "react";
 
-// components
-import { PageFooter, ConfirmationModal } from "@/components";
+//components
+import { PageFooter } from "@/components";
+
+//context
+import { GlobalStateContext, GlobalDispatchContext } from "@/context/GlobalContext";
+
+//utils
+import { backendAPI, setErrorMessage, setGameState } from "@/utils";
+
+interface GameState {
+  unlockData?: {
+    emoteId?: string;
+    emoteName?: string;
+    emotePreviewUrl?: string;
+    emoteDescription?: string;
+    password?: string;
+    stats?: {
+      attempts?: number;
+      successfulUnlocks?: number;
+      unlockUsers?: Array<{
+        visitorId: string;
+        displayName: string;
+        unlockedAt: string;
+      }>;
+    };
+  };
+}
+
+interface Emote {
+  id: string;
+  name: string;
+  previewUrl: string;
+}
 
 export const AdminView = () => {
-  const [showConfirmationModal, setShowConfirmationModal] = useState(false);
+  const { gameState } = useContext(GlobalStateContext);
+  const dispatch = useContext(GlobalDispatchContext);
+  const typedGameState = gameState as GameState;
+  
+  const [isLoading, setIsLoading] = useState(false);
+  const [showEngagement, setShowEngagement] = useState(false);
+  const [emotesFetchError, setEmotesFetchError] = useState("");
+  
+  //form fields
+  const [selectedEmote, setSelectedEmote] = useState("");
+  const [emoteDescription, setEmoteDescription] = useState("");
+  const [password, setPassword] = useState("");
+  const [availableEmotes, setAvailableEmotes] = useState<Emote[]>([]);
 
-  function handleToggleShowConfirmationModal() {
-    setShowConfirmationModal(!showConfirmationModal);
-  }
+  //load current settings and available emotes
+  useEffect(() => {
+    const fetchEmotes = async () => {
+      try {
+        setIsLoading(true);
+        setEmotesFetchError("");
+        
+        const response = await backendAPI.get("/available-emotes");
+        
+        if (!response.data.success) {
+          setEmotesFetchError("Failed to fetch available emotes");
+          return;
+        }
+        
+        setAvailableEmotes(response.data.emotes || []);
+        
+        //set current values if they exist
+        if (typedGameState?.unlockData) {
+          setSelectedEmote(typedGameState.unlockData.emoteId || "");
+          setEmoteDescription(typedGameState.unlockData.emoteDescription || "");
+          setPassword(typedGameState.unlockData.password || "");
+        }
+      } catch (error: any) {
+        setEmotesFetchError("Error loading emotes: " + (error.message || "Unknown error"));
+        setErrorMessage(dispatch, error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchEmotes();
+  }, [typedGameState, dispatch]);
+
+  const handleSave = async () => {
+    if (!selectedEmote || !password.trim()) {
+      window.parent.postMessage({ 
+        type: "showToast", 
+        title: "Missing Information", 
+        description: "Please select an emote and set a password"
+      }, "*");
+      return;
+    }
+
+    const selectedEmoteObject = availableEmotes.find(e => e.id === selectedEmote);
+    if (!selectedEmoteObject) {
+      window.parent.postMessage({ 
+        type: "showToast", 
+        title: "Error", 
+        description: "Selected emote not found"
+      }, "*");
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const response = await backendAPI.post("/emote-unlock/config", {
+        selectedEmote: {
+          id: selectedEmoteObject.id,
+          name: selectedEmoteObject.name,
+          previewUrl: selectedEmoteObject.previewUrl
+        },
+        emoteDescription: emoteDescription.trim(),
+        unlockCondition: {
+          type: "password",
+          value: password.trim().toLowerCase()
+        }
+      });
+      
+      setGameState(dispatch, response.data);
+      
+      window.parent.postMessage({ 
+        type: "showToast", 
+        title: "Configuration Saved", 
+        description: "The emote unlock has been configured successfully"
+      }, "*");
+      
+      //reset engagement data visibility after save
+      setShowEngagement(false);
+    } catch (error: any) {
+      window.parent.postMessage({ 
+        type: "showToast", 
+        title: "Error Saving Configuration", 
+        description: error.message || "An unexpected error occurred"
+      }, "*");
+      setErrorMessage(dispatch, error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
-    <div style={{ position: "relative" }}>
-      <PageFooter>
-        <button className="btn btn-danger" onClick={() => handleToggleShowConfirmationModal()}>
-          Reset
+    <div className="w-full max-w-3xl mx-auto p-6">
+      
+      {/* configuration section */}
+      <div className="mb-8 p-8 bg-white rounded-lg shadow-sm">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-xl font-semibold">Configuration</h2>
+        </div>
+        <p className="mb-8 text-gray-600">
+          Allow users to unlock an emote when they successfully answer a question or enter the correct password.
+        </p>
+        
+        <div className="space-y-8">
+          {/* emote selection */}
+          <div>
+            <h3 className="text-md font-semibold mb-1">Emote Selection</h3>
+            <p className="text-sm text-gray-600 mb-3">Choose an emote to unlock for your visitors</p>
+            
+            {emotesFetchError ? (
+              <div className="text-red-500 mb-2">{emotesFetchError}</div>
+            ) : null}
+            
+            <select 
+              value={selectedEmote}
+              onChange={(e) => setSelectedEmote(e.target.value)}
+              className="w-full p-3 border border-gray-300 rounded-md"
+              disabled={isLoading || availableEmotes.length === 0}
+            >
+              <option value="">Select an emote</option>
+              {availableEmotes.map(emote => (
+                <option key={emote.id} value={emote.id}>
+                  {emote.name}
+                </option>
+              ))}
+            </select>
+            
+            {availableEmotes.length === 0 && !emotesFetchError && !isLoading && (
+              <p className="text-amber-600 text-sm mt-2">No unlockable emotes found. Please contact support.</p>
+            )}
+          </div>
+          
+          {/* preview if emote selected */}
+          {selectedEmote && availableEmotes.length > 0 && (
+            <div className="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg">
+              <div className="w-24 h-24 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden">
+                <img 
+                  src={availableEmotes.find(e => e.id === selectedEmote)?.previewUrl || ""}
+                  alt="Emote preview"
+                  className="max-w-full max-h-full object-contain"
+                />
+              </div>
+              <div>
+                <h3 className="font-medium">
+                  {availableEmotes.find(e => e.id === selectedEmote)?.name || "Selected Emote"}
+                </h3>
+                <p className="text-sm text-gray-500">Emote ID: {selectedEmote}</p>
+              </div>
+            </div>
+          )}
+          
+          {/* description */}
+          <div>
+            <h3 className="text-md font-semibold mb-1">Question/Description</h3>
+            <p className="text-sm text-gray-600 mb-3">
+              Enter a description or question to prompt users to the correct answer
+            </p>
+            <textarea
+              value={emoteDescription}
+              onChange={(e) => setEmoteDescription(e.target.value)}
+              className="w-full p-3 border border-gray-300 rounded-md min-h-[100px]"
+              placeholder="Example: Were you naughty before Christmas?"
+              disabled={isLoading}
+            ></textarea>
+          </div>
+          
+          {/* password */}
+          <div>
+            <h3 className="text-md font-semibold mb-1">Password/Answer</h3>
+            <p className="text-sm text-gray-600 mb-3">
+              Choose a password or answer. We recommend 1-2 words. Answers are not case sensitive.
+            </p>
+            <input
+              type="text"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full p-3 border border-gray-300 rounded-md"
+              placeholder="Example: I was a bad boy"
+              disabled={isLoading}
+            />
+          </div>
+          
+          {/* save button */}
+          <div className="pt-4">
+            <button
+              onClick={handleSave}
+              disabled={isLoading}
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-md transition duration-150 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isLoading ? "Saving..." : "Save Configuration"}
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      {/* engagement section */}
+      <div className="mb-8">
+        <button 
+          className="flex items-center justify-between w-full p-5 bg-white rounded-lg shadow-sm"
+          onClick={() => {
+            console.log("Toggling engagement view. Current game state:", typedGameState);
+            setShowEngagement(!showEngagement);
+          }}
+        >
+          <h2 className="text-xl font-semibold">Engagement</h2>
+          <span>{showEngagement ? "▲" : "▼"}</span>
         </button>
-      </PageFooter>
-
-      {showConfirmationModal && (
-        <ConfirmationModal handleToggleShowConfirmationModal={handleToggleShowConfirmationModal} />
-      )}
+        
+        {showEngagement && (
+          <div className="p-6 bg-white rounded-b-lg shadow-sm border-t">
+            {typedGameState?.unlockData ? (
+              <>
+                {/*current configuration summary*/}
+                <div className="mb-6 p-4 bg-blue-50 rounded-lg">
+                  <h3 className="text-lg font-medium mb-3">Current Configuration</h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="bg-white p-3 rounded-lg shadow-sm">
+                      <div className="text-sm text-gray-500">Emote</div>
+                      <div className="font-medium">{typedGameState.unlockData.emoteName || "Not set"}</div>
+                    </div>
+                    <div className="bg-white p-3 rounded-lg shadow-sm">
+                      <div className="text-sm text-gray-500">Password</div>
+                      <div className="font-medium font-mono">{typedGameState.unlockData.password || "Not set"}</div>
+                    </div>
+                    <div className="col-span-2 bg-white p-3 rounded-lg shadow-sm">
+                      <div className="text-sm text-gray-500">Description</div>
+                      <div className="text-gray-700">{typedGameState.unlockData.emoteDescription || "No description"}</div>
+                    </div>
+                  </div>
+                </div>
+                
+                {typedGameState.unlockData.stats && (
+                  <>
+                    <div className="grid grid-cols-2 gap-6 mb-6">
+                      <div className="text-center p-4 bg-gray-50 rounded-lg">
+                        <div className="text-3xl font-bold mb-1">
+                          {typedGameState.unlockData.stats.attempts || 0}
+                        </div>
+                        <div className="text-sm text-gray-600">Users who attempted</div>
+                      </div>
+                      <div className="text-center p-4 bg-gray-50 rounded-lg">
+                        <div className="text-3xl font-bold mb-1">
+                          {typedGameState.unlockData.stats.successfulUnlocks || 0}
+                        </div>
+                        <div className="text-sm text-gray-600">Users who successfully unlocked</div>
+                      </div>
+                    </div>
+                  
+                    {typedGameState.unlockData.stats.unlockUsers && typedGameState.unlockData.stats.unlockUsers.length > 0 ? (
+                      <div>
+                        <h3 className="text-lg font-medium mb-3">Users who unlocked this emote</h3>
+                        <div className="max-h-40 overflow-y-auto bg-gray-50 rounded-lg p-2">
+                          <ul className="divide-y divide-gray-200">
+                            {typedGameState.unlockData.stats.unlockUsers.map((user, index) => (
+                              <li key={index} className="py-2 px-1">
+                                <span className="font-medium">{user.displayName}</span>
+                                <span className="text-xs text-gray-500 ml-2">
+                                  {new Date(user.unlockedAt).toLocaleString()}
+                                </span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      </div>
+                    ) : (
+                      <p className="text-center text-gray-500">No users have unlocked this emote yet</p>
+                    )}
+                  </>
+                )}
+              </>
+            ) : (
+              <p className="text-center text-gray-500 py-4">No configuration data available. Please save a configuration first.</p>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 };
