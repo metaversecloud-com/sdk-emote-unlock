@@ -1,17 +1,12 @@
 import express from "express";
+
+import { getVersion } from "./utils/getVersion.js";
 import {
-  handleDropAsset,
-  handleGetDroppedAsset,
-  handleGetVisitor,
-  handleRemoveDroppedAssetsByUniqueName,
-  handleGetWorldDetails,
-  handleGetEmoteUnlock,
   handleEmoteUnlockAttempt,
   handleEmoteUnlockConfig,
   handleGetAvailableEmotes,
-  handleTriggerParticle
+  handleGetEmoteUnlock,
 } from "./controllers/index.js";
-import { getVersion } from "./utils/getVersion.js";
 
 const router = express.Router();
 const SERVER_START_DATE = new Date();
@@ -34,22 +29,9 @@ router.get("/system/health", (req, res) => {
   });
 });
 
-//dropped Assets
-router.post("/dropped-asset", handleDropAsset);
-router.get("/dropped-asset", handleGetDroppedAsset);
-router.post("/remove-dropped-assets", handleRemoveDroppedAssetsByUniqueName);
-
-//visitor
-router.get("/visitor", handleGetVisitor);
-
-//world
-router.get("/world", handleGetWorldDetails);
-
-//emote unlock
 router.get("/emote-unlock", handleGetEmoteUnlock);
 router.post("/emote-unlock/attempt", handleEmoteUnlockAttempt);
 router.post("/emote-unlock/config", handleEmoteUnlockConfig);
 router.get("/available-emotes", handleGetAvailableEmotes);
-router.post("/trigger-particle", handleTriggerParticle);
 
 export default router;

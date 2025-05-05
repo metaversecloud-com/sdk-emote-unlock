@@ -3,16 +3,23 @@ import { Dispatch } from "react";
 
 export const setErrorMessage = (
   dispatch: Dispatch<ActionType> | null,
-  error:
+  error?:
     | string
     | {
         message?: string;
         response?: { data?: { error?: { message?: string }; message?: string } };
       },
 ) => {
-  console.error(error);
-
   if (!dispatch) return;
+
+  if (!error) {
+    return dispatch({
+      type: SET_ERROR,
+      payload: { error: "" },
+    });
+  }
+
+  console.error(error);
 
   let message = error;
 
