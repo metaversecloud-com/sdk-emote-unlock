@@ -174,7 +174,7 @@ export const AdminView = () => {
               <>
                 {/*current configuration summary*/}
                 <div className="mb-6 p-4 bg-blue-50 rounded-lg">
-                  <h4>Current Configuration</h4>
+                  <h4 className="pb-4">Current Configuration</h4>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="bg-white p-3 rounded-lg shadow-sm">
                       <div className="text-sm text-gray-500">Emote</div>

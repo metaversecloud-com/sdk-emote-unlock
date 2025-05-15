@@ -91,7 +91,7 @@ const EmoteUnlockView = () => {
             alt="Emote preview"
             className="w-48 h-48 object-contain mx-auto mb-4"
           />
-          <h2 className="text-2xl font-semibold">{gameState?.emoteName || "Mystery Emote"}</h2>
+          <h3>{gameState?.emoteName || "Mystery Emote"}</h3>
         </div>
 
         <p>
@@ -108,9 +108,7 @@ const EmoteUnlockView = () => {
       {renderUnlockUI()}
 
       {gameState?.stats && (
-        <div className="mt-10 text-sm text-center text-gray-500">
-          <p>{gameState.stats.successfulUnlocks || 0} users have unlocked this emote</p>
-        </div>
+        <p className="pt-8 text-center">{gameState.stats.successfulUnlocks || 0} users have unlocked this emote</p>
       )}
     </>
   );

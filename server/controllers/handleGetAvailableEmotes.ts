@@ -4,7 +4,7 @@ import { errorHandler, getCredentials, Visitor } from "../utils/index.js";
 interface Expression {
   id: string;
   name: string;
-  previewUrl?: string;
+  expressionImage?: string;
   type: string;
 }
 
@@ -22,7 +22,7 @@ export const handleGetAvailableEmotes = async (req: Request, res: Response) => {
       id: expression.id,
       name: expression.name,
       type: expression.type,
-      previewUrl: expression.previewUrl || `/default-emote-icon.svg`,
+      previewUrl: expression.expressionImage || `/default-emote-icon.svg`,
     }));
 
     return res.json({
