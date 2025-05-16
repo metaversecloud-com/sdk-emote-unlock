@@ -5,7 +5,7 @@ import {
   SET_GAME_STATE,
   SET_HAS_SETUP_BACKEND,
   SET_INTERACTIVE_PARAMS,
-  SET_VISITOR
+  SET_VISITOR,
 } from "./types";
 
 const globalReducer = (state: InitialState, action: ActionType) => {

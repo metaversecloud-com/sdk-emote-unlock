@@ -20,20 +20,35 @@ export type InteractiveParams = {
 
 export interface InitialState {
   error?: string;
-  gameState?: object;
+  gameState?: GameStateType;
   hasInteractiveParams?: boolean;
   hasSetupBackend?: boolean;
   profileId?: string;
   sceneDropId?: string;
-  visitor?: { 
-    isAdmin: boolean; 
-    isInZone: boolean;
-    profileId?: string;
-    dataObject?: any;
+  visitor?: {
+    isAdmin: boolean;
   };
 }
 
 export type ActionType = {
   type: string;
   payload: InitialState;
+};
+
+export type GameStateType = {
+  emoteId?: string;
+  emoteName?: string;
+  emotePreviewUrl?: string;
+  emoteDescription?: string;
+  password?: string;
+  stats?: {
+    successfulUnlocks?: number;
+    attempts?: number;
+    unlockUsers?: Array<{
+      visitorId: string;
+      displayName: string;
+      unlockedAt: string;
+    }>;
+  };
+  isEmoteUnlocked?: boolean;
 };

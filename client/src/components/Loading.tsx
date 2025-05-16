@@ -1,8 +1,11 @@
-export const Loading = ({ message }: { message?: string }) => {
+export const Loading = () => {
   return (
-    <div className="flex flex-col items-center justify-center h-full w-full">
-      <img src="/icons/loading.svg" alt="Loading..." className="w-12 h-12 animate-spin" />
-      <p className="mt-4 text-gray-600">{message || 'Loading...'}</p>
+    <div className="container my-6">
+      <img
+        alt="Loading"
+        src="https://sdk-style.s3.amazonaws.com/icons/loading.svg"
+        style={{ margin: "auto", width: 50, height: 50 }}
+      />
     </div>
   );
 };

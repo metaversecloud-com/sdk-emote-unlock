@@ -2,30 +2,32 @@ import { useContext, useEffect, useState } from "react";
 
 // components
 import { PageContainer } from "@/components";
-import AdminIconButton from "@/components/AdminIconButton";
 import EmoteUnlockView from "@/components/EmoteUnlockView";
-import AdminView from "@/components/AdminView";
 
 // context
 import { GlobalDispatchContext, GlobalStateContext } from "@/context/GlobalContext";
 
 // utils
 import { backendAPI, setErrorMessage, setGameState } from "@/utils";
+import { SET_VISITOR } from "@/context/types";
 
 const Home = () => {
   const dispatch = useContext(GlobalDispatchContext);
-  const { gameState, hasInteractiveParams, hasSetupBackend, visitor } = useContext(GlobalStateContext);
+  const { hasInteractiveParams, hasSetupBackend } = useContext(GlobalStateContext);
 
-  const [isLoading, setIsLoading] = useState(false);
-  const [showSettings, setShowSettings] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     if (hasInteractiveParams) {
-      setIsLoading(true);
       backendAPI
         .get("/emote-unlock")
         .then((response) => {
-          setGameState(dispatch, response.data);
+          setGameState(dispatch, response.data.unlockData);
+
+          dispatch!({
+            type: SET_VISITOR,
+            payload: { visitor: { isAdmin: response.data.isAdmin } },
+          });
         })
         .catch((error) => setErrorMessage(dispatch, error))
         .finally(() => {
@@ -38,22 +40,7 @@ const Home = () => {
 
   return (
     <PageContainer isLoading={isLoading}>
-      <div className="relative w-full">
-        {visitor?.isAdmin && (
-          <div className="absolute top-0 right-0 z-10">
-            <AdminIconButton
-              setShowSettings={() => setShowSettings(!showSettings)}
-              showSettings={showSettings}
-            />
-          </div>
-        )}
-        
-        {showSettings && visitor?.isAdmin ? (
-          <AdminView />
-        ) : (
-          <EmoteUnlockView />
-        )}
-      </div>
+      <EmoteUnlockView />
     </PageContainer>
   );
 };

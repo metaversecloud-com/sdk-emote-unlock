@@ -8,18 +8,28 @@ export const initializeDroppedAssetDataObject = async (droppedAsset: IDroppedAss
   try {
     await droppedAsset.fetchDataObject();
 
-    if (!droppedAsset?.dataObject?.count) {
+    if (!droppedAsset?.dataObject?.emoteId) {
+      const unlockData = {
+        emoteId: "",
+        emoteName: "",
+        emotePreviewUrl: "",
+        emoteDescription: "",
+        password: "", //only sent to admin
+        stats: {
+          attempts: 0,
+          successfulUnlocks: 0,
+          unlockUsers: [],
+        },
+      };
+
       // Generate a timestamp-based lockId, but use a simple timestamp format to avoid timezone issues
       // The Math.round makes sure we get a consistent minute-based timestamp value
       const timestamp = Math.round(Date.now() / 60000);
       const lockId = `${droppedAsset.id}-${timestamp}`;
-      
-      try {
-        await droppedAsset.setDataObject({ count: 0 }, { lock: { lockId } });
-      } catch (lockError) {
-        // If we get a lock error, just log it and continue
-        console.warn("Unable to acquire lock, another process may be updating the data object");
-      }
+
+      await droppedAsset
+        .setDataObject(unlockData, { lock: { lockId } })
+        .catch(() => console.warn("Unable to acquire lock, another process may be updating the data object"));
     }
 
     return;
