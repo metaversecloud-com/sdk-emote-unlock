@@ -11,22 +11,20 @@ export const handleGetEmoteUnlock = async (req: Request, res: Response) => {
 
     const isEmoteUnlocked = dataObject?.stats?.unlockUsers.some((user: any) => user.visitorId === visitorId) || false;
 
-    //debug: log the retrieved unlock data
-    console.log("Retrieved emote unlock data:", {
-      emoteId: dataObject.emoteId,
-      emoteName: dataObject.emoteName,
-      emoteDescription: dataObject.emoteDescription,
-      isEmoteUnlocked,
-    });
-
     const visitor = await getVisitor(credentials);
 
     //remove password for non-admin users
     const isAdmin = visitor.isAdmin;
     if (!isAdmin) delete dataObject.password;
 
+    const expression = await visitor.getExpressions({ name: dataObject.emoteName });
+
     return res.json({
-      unlockData: { ...dataObject, isEmoteUnlocked },
+      unlockData: {
+        ...dataObject,
+        isEmoteUnlocked,
+        emotePreviewUrl: expression[0].expressionImage || `/default-emote-icon.svg`,
+      },
       isAdmin,
       success: true,
     });

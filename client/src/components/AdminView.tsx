@@ -89,64 +89,70 @@ export const AdminView = () => {
   };
 
   return (
-    <>
+    <div className="grid gap-6">
       {/* configuration section */}
-      <h2 className="pb-2">Configuration</h2>
+      <h2>Configuration</h2>
       <p>Allow users to unlock an emote when they successfully answer a question or enter the correct password.</p>
 
       {/* emote selection */}
-      <h4 className="pt-5">Emote Selection</h4>
-      <p>Choose an emote to unlock for your visitors</p>
+      <div className="grid gap-2">
+        <h4>Emote Selection</h4>
+        <p>Choose an emote to unlock for your visitors</p>
 
-      <select
-        value={selectedEmote}
-        onChange={(e) => setSelectedEmote(e.target.value)}
-        className="input"
-        disabled={areButtonsDisabled || availableEmotes.length === 0}
-      >
-        <option value="">Select an emote</option>
-        {availableEmotes.map((emote) => (
-          <option key={emote.id} value={emote.id}>
-            {emote.name}
-          </option>
-        ))}
-      </select>
+        <select
+          value={selectedEmote}
+          onChange={(e) => setSelectedEmote(e.target.value)}
+          className="input"
+          disabled={areButtonsDisabled || availableEmotes.length === 0}
+        >
+          <option value="">Select an emote</option>
+          {availableEmotes.map((emote) => (
+            <option key={emote.id} value={emote.id}>
+              {emote.name}
+            </option>
+          ))}
+        </select>
+      </div>
 
       {/* preview if emote selected */}
       {selectedEmote && availableEmotes.length > 0 && (
-        <div className="text-center mt-4">
+        <div className="grid gap-2 text-center">
           <img
             src={availableEmotes.find((e) => e.id === selectedEmote)?.previewUrl || ""}
             alt="Emote preview"
             className="mx-auto"
           />
-          <h4 className="pt-2">{availableEmotes.find((e) => e.id === selectedEmote)?.name || "Selected Emote"}</h4>
-          <p className="text-sm text-gray-500">Emote ID: {selectedEmote}</p>
+          <h4>{availableEmotes.find((e) => e.id === selectedEmote)?.name || "Selected Emote"}</h4>
+          <p className="p2">Emote ID: {selectedEmote}</p>
         </div>
       )}
 
       {/* description */}
-      <h4 className="pt-4">Question/Description</h4>
-      <p>Enter a description or question to prompt users to the correct answer</p>
-      <textarea
-        value={emoteDescription}
-        onChange={(e) => setEmoteDescription(e.target.value)}
-        className="input"
-        placeholder="Example: What bird's heart beats 1000 times a minute?"
-        disabled={areButtonsDisabled}
-      ></textarea>
+      <div className="grid gap-2">
+        <h4>Question/Description</h4>
+        <p>Enter a description or question to prompt users to the correct answer</p>
+        <textarea
+          value={emoteDescription}
+          onChange={(e) => setEmoteDescription(e.target.value)}
+          className="input"
+          placeholder="Example: What bird's heart beats 1000 times a minute?"
+          disabled={areButtonsDisabled}
+        ></textarea>
+      </div>
 
       {/* password */}
-      <h4 className="pt-5">Password/Answer</h4>
-      <p>Choose a password or answer. We recommend 1-2 words. Answers are not case sensitive.</p>
-      <input
-        type="text"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        className="input"
-        placeholder="Example: hummingbird"
-        disabled={areButtonsDisabled}
-      />
+      <div className="grid gap-2">
+        <h4>Password/Answer</h4>
+        <p>Choose a password or answer. We recommend 1-2 words. Answers are not case sensitive.</p>
+        <input
+          type="text"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          className="input"
+          placeholder="Example: hummingbird"
+          disabled={areButtonsDisabled}
+        />
+      </div>
 
       {/* save button */}
       <div className="mt-6">
@@ -230,7 +236,7 @@ export const AdminView = () => {
           </>
         )}
       </div>
-    </>
+    </div>
   );
 };
 
