@@ -1,11 +1,16 @@
-import React, { useReducer } from "react";
+import { useReducer } from "react";
+import { globalReducer } from "./reducer";
+import GlobalState from "./GlobalState";
 import { initialState } from "./constants";
-import { GlobalState } from "./GlobalState";
 
-interface GlobalProviderProps {
-  children: React.ReactNode;
-}
+export const GlobalProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [state, dispatch] = useReducer(globalReducer, initialState);
 
-export const GlobalProvider: React.FC<GlobalProviderProps> = ({ children }) => {
-  return <GlobalState>{children}</GlobalState>;
+  return (
+    <GlobalState initialState={state} dispatch={dispatch}>
+      {children}
+    </GlobalState>
+  );
 };
+
+export default GlobalProvider;
