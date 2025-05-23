@@ -198,36 +198,19 @@ export const AdminView = () => {
                 </div>
 
                 {gameState.stats && (
-                  <>
-                    <div className="grid grid-cols-2 gap-6 mb-6">
-                      <div className="text-center p-4 bg-gray-50 rounded-lg">
-                        <div className="text-3xl font-bold mb-1">{gameState.stats.attempts || 0}</div>
-                        <div className="text-sm text-gray-600">Users who attempted</div>
-                      </div>
-                      <div className="text-center p-4 bg-gray-50 rounded-lg">
-                        <div className="text-3xl font-bold mb-1">{gameState.stats.successfulUnlocks || 0}</div>
-                        <div className="text-sm text-gray-600">Users who successfully unlocked</div>
-                      </div>
+                  <div className="grid grid-cols-2 gap-6 mb-6">
+                    <div className="text-center p-4 bg-gray-50 rounded-lg">
+                      <div className="text-3xl font-bold mb-1">{gameState.stats.attempts || 0}</div>
+                      <p className="p2">Users who attempted</p>
                     </div>
-
-                    {gameState.stats.unlockUsers && gameState.stats.unlockUsers.length > 0 ? (
-                      <div>
-                        <h4>Users who unlocked this emote</h4>
-                        <ul className="divide-y divide-gray-200">
-                          {gameState.stats.unlockUsers.map((user, index) => (
-                            <li key={index} className="py-2 px-1">
-                              <span className="font-medium">{user.displayName}</span>
-                              <span className="text-xs text-gray-500 ml-2">
-                                {new Date(user.unlockedAt).toLocaleString()}
-                              </span>
-                            </li>
-                          ))}
-                        </ul>
+                    <div className="text-center p-4 bg-gray-50 rounded-lg">
+                      <div className="text-3xl font-bold mb-1">
+                        {(gameState.stats.successfulUnlocks && Object.keys(gameState.stats.successfulUnlocks).length) ||
+                          0}
                       </div>
-                    ) : (
-                      <p>No users have unlocked this emote yet</p>
-                    )}
-                  </>
+                      <p className="p2">Users who successfully unlocked</p>
+                    </div>
+                  </div>
                 )}
               </>
             ) : (

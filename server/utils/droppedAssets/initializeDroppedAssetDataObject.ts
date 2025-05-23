@@ -17,8 +17,7 @@ export const initializeDroppedAssetDataObject = async (droppedAsset: IDroppedAss
         password: "", //only sent to admin
         stats: {
           attempts: 0,
-          successfulUnlocks: 0,
-          unlockUsers: [],
+          successfulUnlocks: {},
         },
       };
 

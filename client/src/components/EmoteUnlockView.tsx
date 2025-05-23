@@ -3,12 +3,12 @@ import { GlobalStateContext, GlobalDispatchContext } from "@/context/GlobalConte
 import { backendAPI, setErrorMessage, setGameState } from "@/utils";
 
 const EmoteUnlockView = () => {
-  const { gameState } = useContext(GlobalStateContext);
   const dispatch = useContext(GlobalDispatchContext);
+  const { gameState, profileId } = useContext(GlobalStateContext);
+  const { emoteId, emoteDescription, emotePreviewUrl, stats } = gameState || {};
 
   const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isAlreadyUnlocked, setIsAlreadyUnlocked] = useState(false);
 
   const handleUnlockAttempt = async () => {
     if (!password.trim()) {
@@ -24,7 +24,6 @@ const EmoteUnlockView = () => {
       })
       .then((response) => {
         setGameState(dispatch, response.data.unlockData);
-        setIsAlreadyUnlocked(true);
         setPassword("");
         setErrorMessage(dispatch, undefined);
       })
@@ -42,20 +41,26 @@ const EmoteUnlockView = () => {
     }
   };
 
-  const renderUnlockSuccess = () => {
-    return (
-      <div className="text-center py-8 px-6 bg-green-50 rounded-lg border border-green-100">
-        <div className="text-6xl mb-4">🎉</div>
-        <h3 className="pb-4">Emote Already Unlocked!</h3>
-        <p>You've already unlocked this emote. Click on your avatar to use it!</p>
-      </div>
-    );
-  };
+  if (emoteId === "") return <h4>This challenge is not available at this time. Please check back later!</h4>;
 
-  const renderPasswordInput = () => {
-    return (
-      <div className="w-full">
+  return (
+    <>
+      <h3>Emote Unlock Challenge</h3>
+
+      {!Object.keys(stats?.successfulUnlocks ?? {}).includes(profileId!) ? (
         <div className="flex flex-col gap-5">
+          <img
+            src={emotePreviewUrl || "/default-emote-icon.svg"}
+            alt="Emote preview"
+            className="w-48 h-48 object-contain mx-auto mb-4"
+          />
+
+          <p>
+            {emoteDescription ||
+              localStorage.getItem("emoteDescription") ||
+              "Question/Description: Enter the correct answer to unlock this emote!"}
+          </p>
+
           <input
             type="text"
             value={password}
@@ -70,45 +75,18 @@ const EmoteUnlockView = () => {
             {isSubmitting ? "Checking..." : "Unlock Emote"}
           </button>
         </div>
-      </div>
-    );
-  };
-
-  const renderUnlockUI = () => {
-    if (isAlreadyUnlocked) return renderUnlockSuccess();
-
-    return renderPasswordInput();
-  };
-
-  return (
-    <>
-      <div className="mb-8 text-center">
-        <h3>Emote Unlock Challenge</h3>
-
-        <div className="my-4">
-          <img
-            src={gameState?.emotePreviewUrl ? gameState.emotePreviewUrl : "/default-emote-icon.svg"}
-            alt="Emote preview"
-            className="w-48 h-48 object-contain mx-auto mb-4"
-          />
-          <h3>{gameState?.emoteName || "Mystery Emote"}</h3>
+      ) : (
+        <div className="text-center mt-6 py-8 px-6 bg-green-50 rounded-lg border border-green-100">
+          <div className="text-6xl mb-4">🎉</div>
+          <h3 className="pb-4">Emote Unlocked!</h3>
+          <p>You've unlocked this emote. Click on your avatar to use it!</p>
         </div>
+      )}
 
-        <p>
-          {/* directly check for description in multiple places and log everything */}
-          {(() => {
-            // try to get description from various places
-            const description =
-              gameState?.emoteDescription || gameState?.emoteDescription || localStorage.getItem("emoteDescription");
-            return description || "Question/Description: Enter the correct answer to unlock this emote!";
-          })()}
+      {stats && (
+        <p className="p2 pt-8 text-center">
+          {(stats.successfulUnlocks && Object.keys(stats.successfulUnlocks).length) || 0} users have unlocked this emote
         </p>
-      </div>
-
-      {renderUnlockUI()}
-
-      {gameState?.stats && (
-        <p className="pt-8 text-center">{gameState.stats.successfulUnlocks || 0} users have unlocked this emote</p>
       )}
     </>
   );

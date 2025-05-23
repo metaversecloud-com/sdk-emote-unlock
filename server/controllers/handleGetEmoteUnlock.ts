@@ -4,12 +4,12 @@ import { errorHandler, getCredentials, getDroppedAsset, getVisitor } from "../ut
 export const handleGetEmoteUnlock = async (req: Request, res: Response) => {
   try {
     const credentials = getCredentials(req.query);
-    const { visitorId } = credentials;
+    const { profileId } = credentials;
 
     const droppedAsset = await getDroppedAsset(credentials);
     const dataObject = droppedAsset.dataObject;
 
-    const isEmoteUnlocked = dataObject?.stats?.unlockUsers.some((user: any) => user.visitorId === visitorId) || false;
+    const isEmoteUnlocked = dataObject?.stats?.successfulUnlocks[profileId];
 
     const visitor = await getVisitor(credentials);
 

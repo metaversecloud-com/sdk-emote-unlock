@@ -4,23 +4,19 @@ import { errorHandler, getCredentials, getDroppedAsset, getVisitor } from "../ut
 export const handleEmoteUnlockAttempt = async (req: Request, res: Response) => {
   try {
     const credentials = getCredentials(req.query);
-    const { visitorId, displayName } = credentials;
+    const { displayName, profileId } = credentials;
     const { password } = req.body;
 
     const droppedAsset = await getDroppedAsset(credentials);
 
     const unlockData = droppedAsset.dataObject;
 
-    // Update attempt stats
-    unlockData.stats.attempts = (unlockData.stats.attempts || 0) + 1;
-
-    const visitor = await getVisitor(credentials);
-
-    // Check if password matches
     const isCorrectPassword = password.trim().toLowerCase() === unlockData.password.trim().toLowerCase();
 
     if (!password || !isCorrectPassword) {
-      await droppedAsset.updateDataObject({ unlockData });
+      await droppedAsset.updateDataObject({
+        ["stats.attempts"]: (unlockData.stats.attempts || 0) + 1,
+      });
 
       return res.status(400).json({
         success: false,
@@ -28,34 +24,30 @@ export const handleEmoteUnlockAttempt = async (req: Request, res: Response) => {
       });
     }
 
-    console.log("Attempting to grant expression with the following data:", {
-      emoteId: unlockData.emoteId,
-      emoteName: unlockData.emoteName,
-    });
-    let grantExpressionResponse = await visitor
+    const visitor = await getVisitor(credentials);
+
+    const grantExpressionResponse = await visitor
       .grantExpression({
         id: unlockData.emoteId,
       })
-      .catch(async (error: any) => {
+      .catch((error: any) => {
         console.log("Unlock with emoteId failed", error.message);
-
-        grantExpressionResponse = await visitor
-          .grantExpression({
-            name: unlockData.emoteName,
-          })
-          .catch((error: any) => {
-            console.log("Unlock with emoteName failed:", error.message);
-            return errorHandler({
-              error,
-              functionName: "handleGetEmoteUnlock",
-              message: "Error attempting to unlock emote",
-              req,
-              res,
-            });
-          });
       });
 
-    if (grantExpressionResponse.status === 200) {
+    if (grantExpressionResponse.statusCode === 409) {
+      visitor
+        .fireToast({
+          title: "Already Unlocked",
+          text: "You've already unlocked this emote! Click on your avatar to use it.",
+        })
+        .catch((error: any) =>
+          errorHandler({
+            error,
+            functionName: "handleEmoteUnlockAttempt",
+            message: "Error firing toast",
+          }),
+        );
+    } else {
       visitor
         .fireToast({
           title: "Congrats! Emote Unlocked",
@@ -77,34 +69,14 @@ export const handleEmoteUnlockAttempt = async (req: Request, res: Response) => {
         }),
       );
 
-      // Update stats
-      unlockData.stats.successfulUnlocks += 1;
-      if (!unlockData.stats.unlockUsers) {
-        unlockData.stats.unlockUsers = [];
-      }
-      unlockData.stats.unlockUsers.push({
-        visitorId,
-        displayName,
-        unlockedAt: new Date().toISOString(),
+      await droppedAsset.updateDataObject({
+        [`stats.successfulUnlocks.${profileId}`]: { displayName, unlockedAt: new Date().toISOString() },
       });
-
-      await droppedAsset.updateDataObject(unlockData);
-    } else if (grantExpressionResponse.status === 409) {
-      visitor
-        .fireToast({
-          title: "Already Unlocked",
-          text: "You've already unlocked this emote! Click on your avatar to use it.",
-        })
-        .catch((error: any) =>
-          errorHandler({
-            error,
-            functionName: "handleEmoteUnlockAttempt",
-            message: "Error firing toast",
-          }),
-        );
     }
+
+    await droppedAsset.fetchDataObject();
     return res.json({
-      unlockData,
+      unlockData: droppedAsset.dataObject,
       success: true,
     });
   } catch (error) {

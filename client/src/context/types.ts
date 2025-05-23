@@ -11,7 +11,6 @@ export type InteractiveParams = {
   interactiveNonce: string;
   interactivePublicKey: string;
   profileId: string;
-  sceneDropId: string;
   uniqueName: string;
   urlSlug: string;
   username: string;
@@ -24,7 +23,6 @@ export interface InitialState {
   hasInteractiveParams?: boolean;
   hasSetupBackend?: boolean;
   profileId?: string;
-  sceneDropId?: string;
   visitor?: {
     isAdmin: boolean;
   };
@@ -42,13 +40,8 @@ export type GameStateType = {
   emoteDescription?: string;
   password?: string;
   stats?: {
-    successfulUnlocks?: number;
     attempts?: number;
-    unlockUsers?: Array<{
-      visitorId: string;
-      displayName: string;
-      unlockedAt: string;
-    }>;
+    successfulUnlocks?: { [profileId: string]: { unlockedAt: string } };
   };
   isEmoteUnlocked?: boolean;
 };

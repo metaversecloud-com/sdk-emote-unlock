@@ -15,7 +15,6 @@ export const handleEmoteUnlockConfig = async (req: Request, res: Response) => {
       });
     }
 
-    // Initialize the unlock data with stats
     const unlockData = {
       emoteId: selectedEmote.id,
       emoteName: selectedEmote.name,
@@ -24,17 +23,12 @@ export const handleEmoteUnlockConfig = async (req: Request, res: Response) => {
       password: unlockCondition.value.toString().trim().toLowerCase(),
       stats: {
         attempts: 0,
-        successfulUnlocks: 0,
-        unlockUsers: [],
+        successfulUnlocks: {},
       },
     };
 
-    // Debug: log the data being saved
-    console.log("Saving emote config with description:", emoteDescription);
-
     await droppedAsset.updateDataObject(unlockData);
 
-    // Return the updated data in the response
     return res.json({
       unlockData,
       success: true,
