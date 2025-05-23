@@ -9,8 +9,7 @@ export interface IDroppedAsset extends DroppedAsset {
     password: string;
     stats: {
       attempts: number;
-      successfulUnlocks: number;
-      unlockUsers: [];
+      successfulUnlocks: {};
     };
   };
 }
