@@ -14,15 +14,32 @@ export const handleEmoteUnlockAttempt = async (req: Request, res: Response) => {
     const isCorrectPassword = password.trim().toLowerCase() === unlockData.password.trim().toLowerCase();
 
     if (!password || !isCorrectPassword) {
-      await droppedAsset.updateDataObject({
-        ["stats.attempts"]: (unlockData.stats.attempts || 0) + 1,
-      });
+      await droppedAsset.updateDataObject(
+        {
+          ["stats.attempts"]: (unlockData.stats.attempts || 0) + 1,
+        },
+        {
+          analytics: [
+            {
+              analyticName: "false_responses",
+              uniqueKey: profileId,
+            },
+          ],
+        },
+      );
 
       return res.status(400).json({
         success: false,
         message: "Oops! That's not right. Try again!",
       });
     }
+
+    const analytics = [
+      {
+        analyticName: "completions",
+        uniqueKey: profileId,
+      },
+    ];
 
     const visitor = await getVisitor(credentials);
 
@@ -47,6 +64,8 @@ export const handleEmoteUnlockAttempt = async (req: Request, res: Response) => {
             message: "Error firing toast",
           }),
         );
+
+      droppedAsset.updateDataObject({}, { analytics });
     } else {
       visitor
         .fireToast({
@@ -69,9 +88,17 @@ export const handleEmoteUnlockAttempt = async (req: Request, res: Response) => {
         }),
       );
 
-      await droppedAsset.updateDataObject({
-        [`stats.successfulUnlocks.${profileId}`]: { displayName, unlockedAt: new Date().toISOString() },
+      analytics.push({
+        analyticName: "emote_granted",
+        uniqueKey: profileId,
       });
+
+      droppedAsset.updateDataObject(
+        {
+          [`stats.successfulUnlocks.${profileId}`]: { displayName, unlockedAt: new Date().toISOString() },
+        },
+        { analytics },
+      );
     }
 
     await droppedAsset.fetchDataObject();

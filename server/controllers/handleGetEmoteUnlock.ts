@@ -19,6 +19,13 @@ export const handleGetEmoteUnlock = async (req: Request, res: Response) => {
 
     const expression = await visitor.getExpressions({ name: dataObject.emoteName });
 
+    visitor.updateDataObject(
+      {},
+      {
+        analytics: [{ analyticName: "starts", uniqueKey: profileId }],
+      },
+    );
+
     return res.json({
       unlockData: {
         ...dataObject,

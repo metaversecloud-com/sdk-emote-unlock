@@ -4,6 +4,7 @@ import { errorHandler, getCredentials, getDroppedAsset } from "../utils/index.js
 export const handleEmoteUnlockConfig = async (req: Request, res: Response) => {
   try {
     const credentials = getCredentials(req.query);
+    const { profileId } = credentials;
     const { selectedEmote, unlockCondition, emoteDescription } = req.body;
 
     const droppedAsset = await getDroppedAsset(credentials);
@@ -27,7 +28,14 @@ export const handleEmoteUnlockConfig = async (req: Request, res: Response) => {
       },
     };
 
-    await droppedAsset.updateDataObject(unlockData);
+    await droppedAsset.updateDataObject(unlockData, {
+      analytics: [
+        {
+          analyticName: "new_configurations",
+          uniqueKey: profileId,
+        },
+      ],
+    });
 
     return res.json({
       unlockData,
