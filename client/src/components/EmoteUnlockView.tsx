@@ -55,7 +55,7 @@ const EmoteUnlockView = () => {
             className="w-48 h-48 object-contain mx-auto mb-4"
           />
 
-          <p>
+          <p style={{ whiteSpace: "pre-line" }}>
             {emoteDescription ||
               localStorage.getItem("emoteDescription") ||
               "Question/Description: Enter the correct answer to unlock this emote!"}
