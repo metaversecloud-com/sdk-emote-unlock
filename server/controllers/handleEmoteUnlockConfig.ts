@@ -31,12 +31,12 @@ export const handleEmoteUnlockConfig = async (req: Request, res: Response) => {
       const client = new S3Client(credentials);
       const putObjectCommand = new PutObjectCommand({
         Bucket: bucketName,
-        Key: `${fileName}.png`,
+        Key: fileName,
         ContentType: "image/png",
       });
 
       await client.send(putObjectCommand);
-      emotePreviewUrl = `https://${bucketName}.s3.us-east-1.amazonaws.com/${fileName}.png`;
+      emotePreviewUrl = `https://${bucketName}.s3.us-east-1.amazonaws.com/${fileName}`;
     }
 
     const unlockData = {
