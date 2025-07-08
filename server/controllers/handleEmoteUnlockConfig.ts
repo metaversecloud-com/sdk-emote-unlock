@@ -1,8 +1,6 @@
 import { Request, Response } from "express";
 import { errorHandler, getCredentials, getDroppedAsset } from "../utils/index.js";
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
-import https from "https";
-import fs from "fs";
 
 export const handleEmoteUnlockConfig = async (req: Request, res: Response) => {
   try {
@@ -19,12 +17,15 @@ export const handleEmoteUnlockConfig = async (req: Request, res: Response) => {
       });
     }
 
+    const imageUrl = selectedEmote.previewUrl;
     let emotePreviewUrl = `/default-emote-icon.svg`;
-    if (req.hostname !== "localhost" && selectedEmote.previewUrl) {
+    if (imageUrl) {
       const fileName = `${selectedEmote.name}.png`;
-      https.get(selectedEmote.previewUrl, (res: any) => {
-        res.pipe(fs.createWriteStream(""));
-      });
+
+      const response = await fetch(imageUrl);
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+      const buffer = Buffer.from(await response.arrayBuffer());
 
       const bucketName = process.env.S3_BUCKET || "sdk-emunlock";
       const credentials = { region: "us-east-1" };
@@ -33,9 +34,11 @@ export const handleEmoteUnlockConfig = async (req: Request, res: Response) => {
         Bucket: bucketName,
         Key: fileName,
         ContentType: "image/png",
+        Body: buffer,
       });
 
       await client.send(putObjectCommand);
+
       emotePreviewUrl = `https://${bucketName}.s3.us-east-1.amazonaws.com/${fileName}`;
     }
 
