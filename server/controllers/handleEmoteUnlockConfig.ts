@@ -20,26 +20,30 @@ export const handleEmoteUnlockConfig = async (req: Request, res: Response) => {
     const imageUrl = selectedEmote.previewUrl;
     let emotePreviewUrl = `/default-emote-icon.svg`;
     if (imageUrl) {
-      const fileName = `${selectedEmote.name}.png`;
+      try {
+        const fileName = `${selectedEmote.name}.png`;
 
-      const response = await fetch(imageUrl);
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        const response = await fetch(imageUrl);
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
-      const buffer = Buffer.from(await response.arrayBuffer());
+        const buffer = Buffer.from(await response.arrayBuffer());
 
-      const bucketName = process.env.S3_BUCKET || "sdk-emunlock";
-      const credentials = { region: "us-east-1" };
-      const client = new S3Client(credentials);
-      const putObjectCommand = new PutObjectCommand({
-        Bucket: bucketName,
-        Key: fileName,
-        ContentType: "image/png",
-        Body: buffer,
-      });
+        const bucketName = process.env.S3_BUCKET || "sdk-emunlock";
+        const credentials = { region: "us-east-1" };
+        const client = new S3Client(credentials);
+        const putObjectCommand = new PutObjectCommand({
+          Bucket: bucketName,
+          Key: fileName,
+          ContentType: "image/png",
+          Body: buffer,
+        });
 
-      await client.send(putObjectCommand);
+        await client.send(putObjectCommand);
 
-      emotePreviewUrl = `https://${bucketName}.s3.us-east-1.amazonaws.com/${fileName}`;
+        emotePreviewUrl = `https://${bucketName}.s3.us-east-1.amazonaws.com/${fileName}`;
+      } catch (error) {
+        console.error("Error uploading file:", error);
+      }
     }
 
     const unlockData = {
