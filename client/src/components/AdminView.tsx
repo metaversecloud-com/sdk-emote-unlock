@@ -5,6 +5,7 @@ import { GlobalStateContext, GlobalDispatchContext } from "@/context/GlobalConte
 
 //utils
 import { backendAPI, setErrorMessage, setGameState } from "@/utils";
+import { Loading } from "./Loading";
 
 interface Emote {
   id: string;
@@ -17,6 +18,7 @@ export const AdminView = () => {
   const dispatch = useContext(GlobalDispatchContext);
 
   const [showEngagement, setShowEngagement] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [areButtonsDisabled, setAreButtonsDisabled] = useState(false);
 
   //form fields
@@ -41,6 +43,9 @@ export const AdminView = () => {
         })
         .catch((error) => {
           setErrorMessage(dispatch, error);
+        })
+        .finally(() => {
+          setIsLoading(false);
         });
     };
 
@@ -87,6 +92,8 @@ export const AdminView = () => {
         setAreButtonsDisabled(false);
       });
   };
+
+  if (isLoading) return <Loading />;
 
   return (
     <div className="grid gap-6">

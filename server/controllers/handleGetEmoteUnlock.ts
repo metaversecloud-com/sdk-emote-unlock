@@ -17,8 +17,6 @@ export const handleGetEmoteUnlock = async (req: Request, res: Response) => {
     const isAdmin = visitor.isAdmin;
     if (!isAdmin) delete dataObject.password;
 
-    const expression = await visitor.getExpressions({ name: dataObject.emoteName });
-
     visitor.updateDataObject(
       {},
       {
@@ -30,7 +28,7 @@ export const handleGetEmoteUnlock = async (req: Request, res: Response) => {
       unlockData: {
         ...dataObject,
         isEmoteUnlocked,
-        emotePreviewUrl: expression[0].expressionImage || `/default-emote-icon.svg`,
+        emotePreviewUrl: dataObject.emotePreviewUrl || `/default-emote-icon.svg`,
       },
       isAdmin,
       success: true,
