@@ -38,9 +38,11 @@ export const handleEmoteUnlockConfig = async (req: Request, res: Response) => {
           Body: buffer,
         });
 
-        await client.send(putObjectCommand);
+        const result = await client.send(putObjectCommand);
+        console.log("🚀 ~ handleEmoteUnlockConfig.ts:42 ~ result:", result);
 
         emotePreviewUrl = `https://${bucketName}.s3.us-east-1.amazonaws.com/${fileName}`;
+        console.log("🚀 ~ handleEmoteUnlockConfig.ts:45 ~ emotePreviewUrl:", emotePreviewUrl);
       } catch (error) {
         console.error("Error uploading file:", error);
       }
@@ -49,7 +51,7 @@ export const handleEmoteUnlockConfig = async (req: Request, res: Response) => {
     const unlockData = {
       emoteId: selectedEmote.id,
       emoteName: selectedEmote.name,
-      emoteDescription: selectedEmote.description || emoteDescription,
+      emoteDescription: emoteDescription,
       emotePreviewUrl,
       password: unlockCondition.value.toString().trim().toLowerCase(),
       stats: {
