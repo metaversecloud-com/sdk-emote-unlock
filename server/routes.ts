@@ -5,6 +5,7 @@ import {
   handleEmoteUnlockAttempt,
   handleEmoteUnlockConfig,
   handleGetAvailableEmotes,
+  handleGetAvailableAccessories,
   handleGetEmoteUnlock,
 } from "./controllers/index.js";
 
@@ -33,5 +34,6 @@ router.get("/emote-unlock", handleGetEmoteUnlock);
 router.post("/emote-unlock/attempt", handleEmoteUnlockAttempt);
 router.post("/emote-unlock/config", handleEmoteUnlockConfig);
 router.get("/available-emotes", handleGetAvailableEmotes);
+router.get("/available-accessories", handleGetAvailableAccessories);
 
 export default router;

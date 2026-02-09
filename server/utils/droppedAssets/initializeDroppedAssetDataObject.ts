@@ -8,7 +8,9 @@ export const initializeDroppedAssetDataObject = async (droppedAsset: IDroppedAss
   try {
     await droppedAsset.fetchDataObject();
 
-    if (!droppedAsset?.dataObject?.emoteId) {
+    const dataObject = droppedAsset?.dataObject as any;
+    const hasExistingConfig = dataObject?.emoteId || dataObject?.itemId || dataObject?.accessoryIds || dataObject?.unlockType;
+    if (!hasExistingConfig) {
       const unlockData = {
         emoteId: "",
         emoteName: "",

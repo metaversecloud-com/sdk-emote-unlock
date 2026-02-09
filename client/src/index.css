@@ -1,3 +1,375 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* ========================================
+   TREASURE TROVE DESIGN SYSTEM
+   ======================================== */
+
+@layer base {
+  :root {
+    --color-primary: #D94F30;
+    --color-primary-hover: #C04328;
+    --color-primary-soft: #FCEEE9;
+    --color-secondary: #1B4965;
+    --color-secondary-light: #2A6F97;
+    --color-accent: #F5CB5C;
+    --color-accent-glow: #FFF3C4;
+    --color-bg: #FAF7F2;
+    --color-surface: #FFFFFF;
+    --color-text: #1E293B;
+    --color-text-soft: #64748B;
+    --color-success: #059669;
+    --color-success-bg: #D1FAE5;
+    --color-border: #E2DDD5;
+    --color-selected: #EBF0FF;
+    --color-selected-border: #6B8FD4;
+  }
+
+  html {
+    font-family: 'Albert Sans', sans-serif;
+    color: var(--color-text);
+    background-color: var(--color-bg);
+  }
+
+  body {
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: 'Righteous', cursive;
+    color: var(--color-secondary);
+    letter-spacing: 0.01em;
+  }
+}
+
+/* ========================================
+   COMPONENT CLASSES
+   ======================================== */
+
+@layer components {
+  /* Primary action button */
+  .btn-treasure {
+    @apply font-body font-semibold text-white rounded-xl px-6 py-3
+           transition-all duration-200 ease-out
+           disabled:opacity-40 disabled:cursor-not-allowed disabled:transform-none disabled:shadow-none;
+    background: linear-gradient(135deg, var(--color-primary) 0%, #E06B52 100%);
+    box-shadow: 0 4px 14px rgba(217, 79, 48, 0.25);
+  }
+  .btn-treasure:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(217, 79, 48, 0.35);
+  }
+  .btn-treasure:active:not(:disabled) {
+    transform: translateY(0px) scale(0.98);
+  }
+
+  /* Ghost/secondary button */
+  .btn-ghost {
+    @apply font-body font-medium rounded-xl px-5 py-2.5
+           border-2 transition-all duration-200;
+    color: var(--color-secondary);
+    border-color: var(--color-border);
+    background: transparent;
+  }
+  .btn-ghost:hover:not(:disabled) {
+    background: var(--color-primary-soft);
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+  }
+
+  /* Card container */
+  .card {
+    @apply rounded-2xl p-5;
+    background: var(--color-surface);
+    border: 1.5px solid var(--color-border);
+    box-shadow: 0 2px 12px rgba(27, 73, 101, 0.08);
+  }
+
+  /* Styled form input */
+  .input-treasure {
+    @apply font-body w-full rounded-xl px-4 py-3 text-sm
+           transition-all duration-200 outline-none;
+    background: var(--color-surface);
+    border: 1.5px solid var(--color-border);
+    color: var(--color-text);
+  }
+  .input-treasure::placeholder {
+    color: var(--color-text-soft);
+    opacity: 0.7;
+  }
+  .input-treasure:focus {
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 3px var(--color-accent-glow);
+  }
+
+  .input-treasure:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  /* Styled select */
+  select.input-treasure {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748B' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 2.5rem;
+  }
+
+  /* Styled textarea */
+  textarea.input-treasure {
+    min-height: 80px;
+    resize: vertical;
+  }
+
+  /* Option card (multiple choice answers) */
+  .option-card {
+    @apply flex items-center gap-3 rounded-xl cursor-pointer
+           transition-all duration-200;
+    padding: 14px 16px;
+    background: var(--color-surface);
+    border: 2px solid var(--color-border);
+  }
+  .option-card:hover {
+    border-color: var(--color-accent);
+    transform: translateY(-1px);
+    box-shadow: 0 3px 10px rgba(27, 73, 101, 0.08);
+  }
+  .option-card.selected {
+    background: var(--color-accent-glow);
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 2px rgba(245, 203, 92, 0.2);
+  }
+
+  /* Gold frame for item preview */
+  .treasure-frame {
+    @apply relative inline-block rounded-2xl p-1;
+    background: linear-gradient(135deg, var(--color-accent) 0%, #E8B84B 50%, var(--color-accent) 100%);
+    box-shadow: 0 0 24px rgba(245, 203, 92, 0.25);
+  }
+  .treasure-frame-inner {
+    @apply rounded-xl overflow-hidden;
+    background: var(--color-surface);
+    padding: 12px;
+  }
+
+  /* Stats badge */
+  .stats-badge {
+    @apply inline-flex items-center gap-1.5 rounded-full px-4 py-1.5
+           text-xs font-medium;
+    background: var(--color-accent-glow);
+    color: var(--color-secondary);
+    border: 1px solid rgba(245, 203, 92, 0.3);
+  }
+
+  /* Admin section card */
+  .admin-section {
+    @apply rounded-xl p-4;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+  }
+
+  /* Admin stat card */
+  .stat-card {
+    @apply text-center rounded-xl p-4;
+    background: linear-gradient(135deg, var(--color-accent-glow) 0%, var(--color-surface) 100%);
+    border: 1px solid rgba(245, 203, 92, 0.25);
+  }
+  .stat-card .stat-value {
+    font-family: 'Righteous', cursive;
+    font-size: 1.75rem;
+    color: var(--color-secondary);
+  }
+  .stat-card .stat-label {
+    font-size: 0.75rem;
+    color: var(--color-text-soft);
+    margin-top: 2px;
+  }
+
+  /* Error toast */
+  .error-toast {
+    @apply rounded-xl px-4 py-3 text-sm;
+    background: #FEF2F2;
+    border: 1px solid #FECACA;
+    color: #DC2626;
+  }
+}
+
+/* ========================================
+   BACKGROUNDS & ATMOSPHERE
+   ======================================== */
+
+/* Student view floating shapes */
+.bg-student {
+  position: relative;
+  overflow: hidden;
+}
+.bg-student::before,
+.bg-student::after {
+  content: '';
+  position: fixed;
+  border-radius: 50%;
+  opacity: 0.06;
+  pointer-events: none;
+  z-index: 0;
+}
+.bg-student::before {
+  width: 200px;
+  height: 200px;
+  background: var(--color-primary);
+  top: -40px;
+  right: -60px;
+  animation: float 8s ease-in-out infinite;
+}
+.bg-student::after {
+  width: 140px;
+  height: 140px;
+  background: var(--color-accent);
+  bottom: 60px;
+  left: -40px;
+  animation: float 10s ease-in-out infinite reverse;
+}
+
+/* Extra floating shapes via separate elements */
+.floating-diamond {
+  position: fixed;
+  width: 60px;
+  height: 60px;
+  background: var(--color-secondary);
+  opacity: 0.04;
+  transform: rotate(45deg);
+  border-radius: 8px;
+  pointer-events: none;
+  z-index: 0;
+  animation: float 12s ease-in-out infinite;
+}
+
+/* Admin view dot grid */
+.bg-admin {
+  background-image: radial-gradient(circle, var(--color-border) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* ========================================
+   SHAKE ANIMATION (wrong answer)
+   ======================================== */
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  15% { transform: translateX(-8px) rotate(-1deg); }
+  30% { transform: translateX(7px) rotate(1deg); }
+  45% { transform: translateX(-5px) rotate(-0.5deg); }
+  60% { transform: translateX(4px) rotate(0.5deg); }
+  75% { transform: translateX(-2px); }
+  90% { transform: translateX(1px); }
+}
+
+/* ========================================
+   CONFETTI CELEBRATION
+   ======================================== */
+
+.confetti-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 10;
+}
+
+.confetti-piece {
+  position: absolute;
+  top: -10px;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  animation: confettiDrop 1.4s ease-in forwards;
+}
+
+@keyframes confettiDrop {
+  0% {
+    opacity: 1;
+    transform: translateY(0) rotate(0deg) scale(1);
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(180px) rotate(720deg) scale(0.5);
+  }
+}
+
+/* ========================================
+   CUSTOM LOADER
+   ======================================== */
+
+.treasure-loader {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 3px solid var(--color-border);
+  border-top-color: var(--color-primary);
+  border-right-color: var(--color-accent);
+  animation: spinLoader 0.9s linear infinite;
+}
+
+@keyframes spinLoader {
+  to { transform: rotate(360deg); }
+}
+
+/* ========================================
+   STAGGER UTILITY
+   ======================================== */
+
+.stagger-children > * {
+  opacity: 0;
+  animation: fadeSlideUp 0.45s ease-out forwards;
+}
+.stagger-children > *:nth-child(1) { animation-delay: 0.04s; }
+.stagger-children > *:nth-child(2) { animation-delay: 0.1s; }
+.stagger-children > *:nth-child(3) { animation-delay: 0.16s; }
+.stagger-children > *:nth-child(4) { animation-delay: 0.22s; }
+.stagger-children > *:nth-child(5) { animation-delay: 0.28s; }
+.stagger-children > *:nth-child(6) { animation-delay: 0.34s; }
+.stagger-children > *:nth-child(7) { animation-delay: 0.40s; }
+.stagger-children > *:nth-child(8) { animation-delay: 0.46s; }
+.stagger-children > *:nth-child(9) { animation-delay: 0.52s; }
+.stagger-children > *:nth-child(10) { animation-delay: 0.58s; }
+
+@keyframes fadeSlideUp {
+  0% { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* ========================================
+   SCROLLBAR STYLING
+   ======================================== */
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-soft);
+}
+
+/* ========================================
+   OVERRIDE SDK STYLES SELECTIVELY
+   ======================================== */
+
+body.rtsdk {
+  background-color: var(--color-bg) !important;
+  font-family: 'Albert Sans', sans-serif !important;
+}

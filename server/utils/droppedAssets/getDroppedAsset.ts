@@ -16,10 +16,11 @@ export const getDroppedAsset = async (credentials: Credentials) => {
 
     return droppedAsset;
   } catch (error) {
-    return errorHandler({
+    errorHandler({
       error,
       functionName: "getDroppedAsset",
       message: "Error getting dropped asset",
     });
+    throw error;
   }
 };
