@@ -49,7 +49,7 @@ export const handleEmoteUnlockConfig = async (req: Request, res: Response) => {
     const unlockData = {
       emoteId: selectedEmote.id,
       emoteName: selectedEmote.name,
-      emoteDescription: selectedEmote.description || emoteDescription,
+      emoteDescription: emoteDescription,
       emotePreviewUrl,
       password: unlockCondition.value.toString().trim().toLowerCase(),
       stats: {
