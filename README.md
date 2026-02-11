@@ -70,6 +70,18 @@ Emote Unlock enables admins to create password-protected challenges within Topia
 - **Toast Messages**: "Congrats! Emote Unlocked" or "Already Unlocked"
 - **S3 Storage**: Emote preview images stored in S3 bucket
 
+## Environment Variables
+
+Create a `.env` file in the root directory. See `.env-example` for a template.
+
+| Variable               | Description                                                                        | Required |
+| ---------------------- | ---------------------------------------------------------------------------------- | -------- |
+| `NODE_ENV`             | Node environment                                                                   | No       |
+| `SKIP_PREFLIGHT_CHECK` | Skip CRA preflight check                                                           | No       |
+| `INSTANCE_DOMAIN`      | Topia API domain (`api.topia.io` for production, `api-stage.topia.io` for staging) | Yes      |
+| `INTERACTIVE_KEY`      | Topia interactive app key                                                          | Yes      |
+| `INTERACTIVE_SECRET`   | Topia interactive app secret                                                       | Yes      |
+
 ## Developers
 
 ### Getting Started
@@ -91,7 +103,7 @@ INTERACTIVE_SECRET=xxxxxxxxxxxxxx
 S3_BUCKET=sdk-emunlock
 ```
 
-### Where to find API_KEY, INTERACTIVE_KEY and INTERACTIVE_SECRET
+### Where to find INTERACTIVE_KEY and INTERACTIVE_SECRET
 
 [Topia Dev Account Dashboard](https://dev.topia.io/t/dashboard/integrations)
 
