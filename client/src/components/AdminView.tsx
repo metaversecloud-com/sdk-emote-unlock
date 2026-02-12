@@ -2,11 +2,12 @@ import { useState, useContext, useEffect } from "react";
 
 //context
 import { GlobalStateContext, GlobalDispatchContext } from "@/context/GlobalContext";
-import { QuestionType } from "@/context/types";
+import { ErrorType, QuestionType } from "@/context/types";
 
 //utils
 import { backendAPI, setErrorMessage, setGameState } from "@/utils";
 import { Loading } from "./Loading";
+import { useSearchParams } from "react-router-dom";
 
 interface Emote {
   id: string;
@@ -14,7 +15,7 @@ interface Emote {
   previewUrl: string;
 }
 
-interface PackAccessory {
+interface AccessoryPackItem {
   id: string;
   name: string;
   category: string;
@@ -27,7 +28,7 @@ interface AccessoryPack {
   description: string;
   previewUrl: string;
   packId: string;
-  accessories: PackAccessory[];
+  accessories: AccessoryPackItem[];
 }
 
 type UnlockType = "emote" | "accessory";
@@ -40,12 +41,17 @@ export const AdminView = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [areButtonsDisabled, setAreButtonsDisabled] = useState(false);
 
+  const [searchParams] = useSearchParams();
+  const forceRefreshInventory = searchParams.get("forceRefreshInventory") === "true";
+
   //form fields
   const [unlockType, setUnlockType] = useState<UnlockType>(gameState?.unlockType || "emote");
   const [selectedEmote, setSelectedEmote] = useState(gameState?.emoteId || "");
   const [selectedPackId, setSelectedPackId] = useState("");
   const [selectedAccessoryIds, setSelectedAccessoryIds] = useState<string[]>(gameState?.accessoryIds || []);
-  const [itemDescription, setItemDescription] = useState(gameState?.itemDescription || gameState?.emoteDescription || "");
+  const [itemDescription, setItemDescription] = useState(
+    gameState?.itemDescription || gameState?.emoteDescription || "",
+  );
   const [password, setPassword] = useState(gameState?.password || "");
   const [availableEmotes, setAvailableEmotes] = useState<Emote[]>([]);
   const [availablePacks, setAvailablePacks] = useState<AccessoryPack[]>([]);
@@ -58,25 +64,19 @@ export const AdminView = () => {
   //load current settings and available items
   useEffect(() => {
     const fetchItems = async () => {
-      try {
-        // Fetch emotes
-        const emotesResponse = await backendAPI.get("/available-emotes");
-        if (emotesResponse.data.success) {
-          setAvailableEmotes(emotesResponse.data.emotes || []);
-        }
-
-        // Fetch accessory packs
-        const accessoriesResponse = await backendAPI.get("/available-accessories");
-        if (accessoriesResponse.data.success) {
-          setAvailablePacks(accessoriesResponse.data.packs || []);
-        }
-
-        setErrorMessage(dispatch, undefined);
-      } catch (error: any) {
-        setErrorMessage(dispatch, error);
-      } finally {
-        setIsLoading(false);
-      }
+      await backendAPI
+        .get("/unlockables", { params: { forceRefreshInventory } })
+        .then((response) => {
+          setAvailableEmotes(response.data.emotes || []);
+          setAvailablePacks(response.data.packs || []);
+          setErrorMessage(dispatch, undefined);
+        })
+        .catch((error: ErrorType) => {
+          setErrorMessage(dispatch, error);
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
     };
 
     fetchItems();
@@ -108,9 +108,7 @@ export const AdminView = () => {
 
   const handleRemoveOption = (index: number) => {
     setOptions((prev) => prev.filter((_, i) => i !== index));
-    setCorrectAnswers((prev) =>
-      prev.filter((i) => i !== index).map((i) => (i > index ? i - 1 : i)),
-    );
+    setCorrectAnswers((prev) => prev.filter((i) => i !== index).map((i) => (i > index ? i - 1 : i)));
   };
 
   const handleToggleCorrect = (index: number) => {
@@ -179,7 +177,7 @@ export const AdminView = () => {
         setShowEngagement(false);
         setErrorMessage(dispatch, undefined);
       })
-      .catch((error: any) => {
+      .catch((error: ErrorType) => {
         setErrorMessage(dispatch, error);
       })
       .finally(() => {
@@ -317,14 +315,18 @@ export const AdminView = () => {
                     />
                     <div
                       className={`w-4 h-4 rounded border-2 flex items-center justify-center flex-shrink-0 transition-colors ${
-                        selectedAccessoryIds.includes(acc.id)
-                          ? "border-accent bg-accent"
-                          : "border-warm-border"
+                        selectedAccessoryIds.includes(acc.id) ? "border-accent bg-accent" : "border-warm-border"
                       }`}
                     >
                       {selectedAccessoryIds.includes(acc.id) && (
                         <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-                          <path d="M2 5L4 7L8 3" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                          <path
+                            d="M2 5L4 7L8 3"
+                            stroke="white"
+                            strokeWidth="1.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
                         </svg>
                       )}
                     </div>
@@ -386,11 +388,13 @@ export const AdminView = () => {
 
       {/* Answer Section */}
       {questionType === "open_text" ? (
-        <div className="admin-section flex items-center gap-3 py-3"
-             style={{ background: "var(--color-accent-glow)", borderColor: "rgba(245, 203, 92, 0.3)" }}>
+        <div
+          className="admin-section flex items-center gap-3 py-3"
+          style={{ background: "var(--color-accent-glow)", borderColor: "rgba(245, 203, 92, 0.3)" }}
+        >
           <svg width="18" height="18" viewBox="0 0 18 18" fill="none" className="flex-shrink-0">
-            <circle cx="9" cy="9" r="8" stroke="#F5CB5C" strokeWidth="1.5" fill="none"/>
-            <path d="M9 5V10M9 12.5V13" stroke="#D4A04A" strokeWidth="1.5" strokeLinecap="round"/>
+            <circle cx="9" cy="9" r="8" stroke="#F5CB5C" strokeWidth="1.5" fill="none" />
+            <path d="M9 5V10M9 12.5V13" stroke="#D4A04A" strokeWidth="1.5" strokeLinecap="round" />
           </svg>
           <p className="text-xs text-secondary">Users can type anything. Every response grants the unlock.</p>
         </div>
@@ -434,7 +438,13 @@ export const AdminView = () => {
                 >
                   {correctAnswers.includes(index) && (
                     <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                      <path d="M2.5 6L5 8.5L9.5 3.5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path
+                        d="M2.5 6L5 8.5L9.5 3.5"
+                        stroke="white"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
                     </svg>
                   )}
                 </button>
@@ -457,7 +467,12 @@ export const AdminView = () => {
                   title="Remove option"
                 >
                   <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                    <path d="M3.5 3.5L10.5 10.5M3.5 10.5L10.5 3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                    <path
+                      d="M3.5 3.5L10.5 10.5M3.5 10.5L10.5 3.5"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                    />
                   </svg>
                 </button>
               </div>
@@ -476,7 +491,13 @@ export const AdminView = () => {
           {correctAnswers.length > 0 && (
             <div className="flex items-center gap-2 text-xs text-success bg-success-bg rounded-lg px-3 py-2">
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                <path d="M3.5 7L6 9.5L10.5 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                <path
+                  d="M3.5 7L6 9.5L10.5 4.5"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
               </svg>
               Correct: {correctAnswers.map((i) => options[i] || `Option ${i + 1}`).join(", ")}
             </div>
@@ -506,10 +527,19 @@ export const AdminView = () => {
         >
           <span className="font-body font-semibold text-secondary text-base">Engagement</span>
           <svg
-            width="16" height="16" viewBox="0 0 16 16" fill="none"
+            width="16"
+            height="16"
+            viewBox="0 0 16 16"
+            fill="none"
             className={`text-ink-soft transition-transform duration-200 ${showEngagement ? "rotate-180" : ""}`}
           >
-            <path d="M4 6L8 10L12 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            <path
+              d="M4 6L8 10L12 6"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
           </svg>
         </button>
 
@@ -518,7 +548,10 @@ export const AdminView = () => {
             {gameState ? (
               <div className="grid gap-3">
                 {/* Config summary */}
-                <div className="admin-section" style={{ background: "var(--color-accent-glow)", borderColor: "rgba(245, 203, 92, 0.3)" }}>
+                <div
+                  className="admin-section"
+                  style={{ background: "var(--color-accent-glow)", borderColor: "rgba(245, 203, 92, 0.3)" }}
+                >
                   <p className="text-xs font-semibold text-secondary mb-3">Current Configuration</p>
                   <div className="grid grid-cols-2 gap-2">
                     <div className="bg-surface p-2.5 rounded-lg">
@@ -527,7 +560,9 @@ export const AdminView = () => {
                     </div>
                     <div className="bg-surface p-2.5 rounded-lg">
                       <div className="text-xs text-ink-soft">Item</div>
-                      <div className="text-sm font-semibold">{gameState.itemName || gameState.emoteName || "Not set"}</div>
+                      <div className="text-sm font-semibold">
+                        {gameState.itemName || gameState.emoteName || "Not set"}
+                      </div>
                     </div>
                     <div className="bg-surface p-2.5 rounded-lg">
                       <div className="text-xs text-ink-soft">Question Type</div>
@@ -565,7 +600,8 @@ export const AdminView = () => {
                     </div>
                     <div className="stat-card">
                       <div className="stat-value">
-                        {(gameState.stats.successfulUnlocks && Object.keys(gameState.stats.successfulUnlocks).length) || 0}
+                        {(gameState.stats.successfulUnlocks && Object.keys(gameState.stats.successfulUnlocks).length) ||
+                          0}
                       </div>
                       <div className="stat-label">Unlocked</div>
                     </div>
@@ -573,33 +609,42 @@ export const AdminView = () => {
                 )}
 
                 {/* Open text responses table */}
-                {gameState.questionType === "open_text" && gameState.stats?.responses && Object.keys(gameState.stats.responses).length > 0 && (
-                  <div className="admin-section">
-                    <p className="text-xs font-semibold text-secondary mb-3">
-                      Student Responses ({Object.keys(gameState.stats.responses).length})
-                    </p>
-                    <div className="max-h-64 overflow-y-auto rounded-lg border border-warm-border">
-                      <table className="w-full text-sm">
-                        <thead>
-                          <tr className="bg-parchment border-b border-warm-border sticky top-0">
-                            <th className="text-left px-3 py-2 text-xs font-semibold text-ink-soft">Student</th>
-                            <th className="text-left px-3 py-2 text-xs font-semibold text-ink-soft">Response</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {Object.entries(gameState.stats.responses)
-                            .sort(([, a], [, b]) => new Date(b.respondedAt).getTime() - new Date(a.respondedAt).getTime())
-                            .map(([id, entry]) => (
-                              <tr key={id} className="border-b border-warm-border last:border-0 hover:bg-warm-100 transition-colors">
-                                <td className="px-3 py-2.5 font-medium text-ink whitespace-nowrap">{entry.displayName}</td>
-                                <td className="px-3 py-2.5 text-ink-soft">{entry.response}</td>
-                              </tr>
-                            ))}
-                        </tbody>
-                      </table>
+                {gameState.questionType === "open_text" &&
+                  gameState.stats?.responses &&
+                  Object.keys(gameState.stats.responses).length > 0 && (
+                    <div className="admin-section">
+                      <p className="text-xs font-semibold text-secondary mb-3">
+                        Student Responses ({Object.keys(gameState.stats.responses).length})
+                      </p>
+                      <div className="max-h-64 overflow-y-auto rounded-lg border border-warm-border">
+                        <table className="w-full text-sm">
+                          <thead>
+                            <tr className="bg-parchment border-b border-warm-border sticky top-0">
+                              <th className="text-left px-3 py-2 text-xs font-semibold text-ink-soft">Student</th>
+                              <th className="text-left px-3 py-2 text-xs font-semibold text-ink-soft">Response</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {Object.entries(gameState.stats.responses)
+                              .sort(
+                                ([, a], [, b]) => new Date(b.respondedAt).getTime() - new Date(a.respondedAt).getTime(),
+                              )
+                              .map(([id, entry]) => (
+                                <tr
+                                  key={id}
+                                  className="border-b border-warm-border last:border-0 hover:bg-warm-100 transition-colors"
+                                >
+                                  <td className="px-3 py-2.5 font-medium text-ink whitespace-nowrap">
+                                    {entry.displayName}
+                                  </td>
+                                  <td className="px-3 py-2.5 text-ink-soft">{entry.response}</td>
+                                </tr>
+                              ))}
+                          </tbody>
+                        </table>
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
               </div>
             ) : (
               <p className="text-sm text-ink-soft p-3">No configuration saved yet.</p>

@@ -91,7 +91,7 @@ export const handleEmoteUnlockAttempt = async (req: Request, res: Response) => {
           id: itemId,
         })
         .catch((error: any) => {
-          console.log("Unlock with emoteId failed", error.message);
+          console.error("Unlock with emoteId failed", error.message);
         });
 
       if (grantExpressionResponse?.statusCode === 409) {

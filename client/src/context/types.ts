@@ -67,3 +67,10 @@ export type GameStateType = {
     responses?: { [profileId: string]: { displayName: string; response: string; respondedAt: string } };
   };
 };
+
+export type ErrorType =
+  | string
+  | {
+      message?: string;
+      response?: { data?: { error?: { message?: string }; message?: string } };
+    };
