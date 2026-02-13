@@ -1,11 +1,8 @@
 export const Loading = () => {
   return (
-    <div className="container my-6">
-      <img
-        alt="Loading"
-        src="https://sdk-style.s3.amazonaws.com/icons/loading.svg"
-        style={{ margin: "auto", width: 50, height: 50 }}
-      />
+    <div className="flex flex-col items-center justify-center py-16 gap-4">
+      <div className="treasure-loader" />
+      <p className="font-display text-secondary text-sm tracking-wide">Loading...</p>
     </div>
   );
 };

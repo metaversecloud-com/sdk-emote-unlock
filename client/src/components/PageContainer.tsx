@@ -9,7 +9,6 @@ import { GlobalStateContext } from "@context/GlobalContext";
 export const PageContainer = ({
   children,
   isLoading,
-  headerText,
 }: {
   children: ReactNode;
   isLoading: boolean;
@@ -21,25 +20,21 @@ export const PageContainer = ({
   if (isLoading) return <Loading />;
 
   return (
-    <div className="p-4 mb-28">
-      {visitor?.isAdmin && (
-        <div>
-          <AdminIconButton setShowSettings={() => setShowSettings(!showSettings)} showSettings={showSettings} />
-        </div>
-      )}
-      {headerText && (
-        <div className="pb-6">
-          <h2>{headerText}</h2>
-        </div>
-      )}
-      {showSettings ? (
-        <AdminView />
-      ) : (
-        <>
-          {children}
-          {error && error !== "" && <p className="p3 pt-10 text-center text-error">{error}</p>}
-        </>
-      )}
+    <div className={`relative min-h-screen font-body ${showSettings ? "bg-admin" : "bg-student"}`}>
+      {/* Floating decorative shape (student view only) */}
+      {!showSettings && <div className="floating-diamond" style={{ top: "20%", right: "8%" }} />}
+
+      <div className="relative z-10 max-w-lg mx-auto px-4 py-6 pb-28">
+        {visitor?.isAdmin && (
+          <div>
+            <AdminIconButton setShowSettings={() => setShowSettings(!showSettings)} showSettings={showSettings} />
+          </div>
+        )}
+
+        {showSettings ? <AdminView /> : <div className="stagger-children">{children}</div>}
+
+        {error && error !== "" && <div className="error-toast mt-6 text-center">{error}</div>}
+      </div>
     </div>
   );
 };

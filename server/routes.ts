@@ -4,7 +4,7 @@ import { getVersion } from "./utils/getVersion.js";
 import {
   handleEmoteUnlockAttempt,
   handleEmoteUnlockConfig,
-  handleGetAvailableEmotes,
+  handleGetUnlockables,
   handleGetEmoteUnlock,
 } from "./controllers/index.js";
 
@@ -32,6 +32,6 @@ router.get("/system/health", (req, res) => {
 router.get("/emote-unlock", handleGetEmoteUnlock);
 router.post("/emote-unlock/attempt", handleEmoteUnlockAttempt);
 router.post("/emote-unlock/config", handleEmoteUnlockConfig);
-router.get("/available-emotes", handleGetAvailableEmotes);
+router.get("/unlockables", handleGetUnlockables);
 
 export default router;
