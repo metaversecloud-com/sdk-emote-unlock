@@ -158,9 +158,15 @@ const EmoteUnlockView = () => {
       <div className="card text-center py-10">
         <div className="text-4xl mb-3 opacity-40">
           <svg width="56" height="56" viewBox="0 0 56 56" fill="none" className="mx-auto">
-            <rect x="8" y="24" width="40" height="28" rx="4" fill="#E2DDD5" stroke="#C4BFB7" strokeWidth="2"/>
-            <path d="M16 24V18C16 11.4 21.4 6 28 6C34.6 6 40 11.4 40 18V24" stroke="#C4BFB7" strokeWidth="2.5" strokeLinecap="round" fill="none"/>
-            <circle cx="28" cy="38" r="3" fill="#C4BFB7"/>
+            <rect x="8" y="24" width="40" height="28" rx="4" fill="#E2DDD5" stroke="#C4BFB7" strokeWidth="2" />
+            <path
+              d="M16 24V18C16 11.4 21.4 6 28 6C34.6 6 40 11.4 40 18V24"
+              stroke="#C4BFB7"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              fill="none"
+            />
+            <circle cx="28" cy="38" r="3" fill="#C4BFB7" />
           </svg>
         </div>
         <h4 className="text-ink-soft mb-1">Not Available Yet</h4>
@@ -195,9 +201,7 @@ const EmoteUnlockView = () => {
                       />
                     </div>
                   </div>
-                  {accessoryNames?.[i] && (
-                    <p className="text-xs mt-2 font-medium text-ink-soft">{accessoryNames[i]}</p>
-                  )}
+                  {accessoryNames?.[i] && <p className="text-xs mt-2 font-medium text-ink-soft">{accessoryNames[i]}</p>}
                 </div>
               ))}
             </div>
@@ -238,10 +242,7 @@ const EmoteUnlockView = () => {
           ) : (
             <div className="grid gap-2.5">
               {options.map((option, index) => (
-                <label
-                  key={index}
-                  className={`option-card ${selectedAnswers.includes(index) ? "selected" : ""}`}
-                >
+                <label key={index} className={`option-card ${selectedAnswers.includes(index) ? "selected" : ""}`}>
                   <input
                     type={questionType === "multiple_choice" ? "radio" : "checkbox"}
                     name="answer"
@@ -260,14 +261,18 @@ const EmoteUnlockView = () => {
                   />
                   <div
                     className={`w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-colors ${
-                      selectedAnswers.includes(index)
-                        ? "border-accent bg-accent"
-                        : "border-warm-border"
+                      selectedAnswers.includes(index) ? "border-accent bg-accent" : "border-warm-border"
                     }`}
                   >
                     {selectedAnswers.includes(index) && (
                       <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                        <path d="M2.5 6L5 8.5L9.5 3.5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path
+                          d="M2.5 6L5 8.5L9.5 3.5"
+                          stroke="white"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
                       </svg>
                     )}
                   </div>
@@ -279,26 +284,31 @@ const EmoteUnlockView = () => {
 
           {/* Wrong answer feedback */}
           {wrongAttempt && (
-            <div className="flex items-center gap-3 rounded-xl px-4 py-3 animate-fade-up"
-                 style={{ background: "linear-gradient(135deg, #FFF5EB 0%, #FFF0E6 100%)", border: "1.5px solid #F5CB5C" }}>
+            <div
+              className="flex items-center gap-3 rounded-xl px-4 py-3 animate-fade-up"
+              style={{ background: "linear-gradient(135deg, #FFF5EB 0%, #FFF0E6 100%)", border: "1.5px solid #F5CB5C" }}
+            >
               <span className="text-xl flex-shrink-0">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                  <circle cx="12" cy="12" r="10" fill="#FFF3C4" stroke="#F5CB5C" strokeWidth="1.5"/>
-                  <circle cx="8.5" cy="10" r="1.2" fill="#D4A04A"/>
-                  <circle cx="15.5" cy="10" r="1.2" fill="#D4A04A"/>
-                  <path d="M8.5 16C9.5 14.5 14.5 14.5 15.5 16" stroke="#D4A04A" strokeWidth="1.5" strokeLinecap="round"/>
+                  <circle cx="12" cy="12" r="10" fill="#FFF3C4" stroke="#F5CB5C" strokeWidth="1.5" />
+                  <circle cx="8.5" cy="10" r="1.2" fill="#D4A04A" />
+                  <circle cx="15.5" cy="10" r="1.2" fill="#D4A04A" />
+                  <path
+                    d="M8.5 16C9.5 14.5 14.5 14.5 15.5 16"
+                    stroke="#D4A04A"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                  />
                 </svg>
               </span>
-              <p className="text-sm font-medium" style={{ color: "#8B6914" }}>{wrongAttempt}</p>
+              <p className="text-sm font-medium" style={{ color: "#8B6914" }}>
+                {wrongAttempt}
+              </p>
             </div>
           )}
 
           {/* Unlock button */}
-          <button
-            className="btn-treasure text-base"
-            onClick={handleUnlockAttempt}
-            disabled={isSubmitting}
-          >
+          <button className="btn-treasure text-base" onClick={handleUnlockAttempt} disabled={isSubmitting}>
             {isSubmitting ? (
               <span className="flex items-center justify-center gap-2">
                 <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin-loader" />
@@ -311,8 +321,10 @@ const EmoteUnlockView = () => {
         </div>
       ) : (
         /* ====== SUCCESS STATE ====== */
-        <div className="relative card text-center py-10 overflow-hidden animate-bounce-in"
-             style={{ background: "linear-gradient(135deg, #D1FAE5 0%, #ECFDF5 50%, #FFF3C4 100%)" }}>
+        <div
+          className="relative card text-center py-10 overflow-hidden animate-bounce-in"
+          style={{ background: "linear-gradient(135deg, #D1FAE5 0%, #ECFDF5 50%, #FFF3C4 100%)" }}
+        >
           <ConfettiCelebration />
 
           <div className="relative z-10">
@@ -320,13 +332,11 @@ const EmoteUnlockView = () => {
               <StarIcon />
             </div>
 
-            <h3 className="pb-3 text-success">
-              {isAccessory ? "Accessories" : "Emote"} Unlocked!
-            </h3>
+            <h3 className="pb-3 text-success">{isAccessory ? "Accessories" : "Emote"} Unlocked!</h3>
 
             <p className="text-sm text-ink-soft max-w-xs mx-auto leading-relaxed">
               {isAccessory
-                ? `You've unlocked ${accessoryNames?.length || 1} new accessor${(accessoryNames?.length || 1) === 1 ? "y" : "ies"}! Customize your avatar to use them.`
+                ? `You've unlocked ${accessoryNames?.length || 1} new accessor${(accessoryNames?.length || 1) === 1 ? "y" : "ies"}! Customize your avatar to use them. You may need to reload the page to check out your new accessories.`
                 : "You've unlocked this emote. Click on your avatar to use it!"}
             </p>
           </div>
@@ -338,7 +348,12 @@ const EmoteUnlockView = () => {
         <div className="flex justify-center mt-6">
           <div className="stats-badge">
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-              <path d="M7 1L8.5 5H13L9.5 7.5L10.5 11.5L7 9L3.5 11.5L4.5 7.5L1 5H5.5L7 1Z" fill="#F5CB5C" stroke="#E8B84B" strokeWidth="0.8"/>
+              <path
+                d="M7 1L8.5 5H13L9.5 7.5L10.5 11.5L7 9L3.5 11.5L4.5 7.5L1 5H5.5L7 1Z"
+                fill="#F5CB5C"
+                stroke="#E8B84B"
+                strokeWidth="0.8"
+              />
             </svg>
             {(stats.successfulUnlocks && Object.keys(stats.successfulUnlocks).length) || 0} users unlocked
           </div>

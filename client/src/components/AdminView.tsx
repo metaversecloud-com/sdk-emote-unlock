@@ -298,21 +298,17 @@ export const AdminView = () => {
 
               <div className="grid gap-1.5 max-h-52 overflow-y-auto rounded-xl border border-warm-border p-2 bg-parchment">
                 {packAccessories.map((acc) => (
-                  <label
+                  <div
                     key={acc.id}
+                    role="checkbox"
+                    aria-checked={selectedAccessoryIds.includes(acc.id)}
                     className={`flex items-center gap-3 p-2.5 rounded-lg cursor-pointer transition-all duration-150 ${
                       selectedAccessoryIds.includes(acc.id)
                         ? "bg-accent-glow border border-accent shadow-sm"
                         : "bg-surface border border-transparent hover:bg-warm-100"
                     }`}
+                    onClick={() => !areButtonsDisabled && toggleAccessory(acc.id)}
                   >
-                    <input
-                      type="checkbox"
-                      checked={selectedAccessoryIds.includes(acc.id)}
-                      onChange={() => toggleAccessory(acc.id)}
-                      disabled={areButtonsDisabled}
-                      className="sr-only"
-                    />
                     <div
                       className={`w-4 h-4 rounded border-2 flex items-center justify-center flex-shrink-0 transition-colors ${
                         selectedAccessoryIds.includes(acc.id) ? "border-accent bg-accent" : "border-warm-border"
@@ -341,7 +337,7 @@ export const AdminView = () => {
                         {acc.category}
                       </span>
                     )}
-                  </label>
+                  </div>
                 ))}
               </div>
             </div>
