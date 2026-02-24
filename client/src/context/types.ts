@@ -33,15 +33,44 @@ export type ActionType = {
   payload: InitialState;
 };
 
+export type QuestionType = "text" | "open_text" | "multiple_choice" | "all_that_apply";
+
 export type GameStateType = {
+  // New generic fields
+  unlockType?: "emote" | "accessory";
+  itemId?: string;
+  itemName?: string;
+  itemPreviewUrl?: string;
+  itemDescription?: string;
+  isItemUnlocked?: boolean;
+
+  // Accessory multi-select fields
+  accessoryIds?: string[];
+  accessoryNames?: string[];
+  accessoryPreviewUrls?: string[];
+
+  // Legacy fields (for backwards compatibility)
   emoteId?: string;
   emoteName?: string;
   emotePreviewUrl?: string;
   emoteDescription?: string;
+  isEmoteUnlocked?: boolean;
+
+  // Question/answer fields
+  questionType?: QuestionType;
   password?: string;
+  options?: string[];
+  correctAnswers?: number[];
   stats?: {
     attempts?: number;
-    successfulUnlocks?: { [profileId: string]: { unlockedAt: string } };
+    successfulUnlocks?: { [profileId: string]: { unlockedAt: string; displayName?: string } };
+    responses?: { [profileId: string]: { displayName: string; response: string; respondedAt: string } };
   };
-  isEmoteUnlocked?: boolean;
 };
+
+export type ErrorType =
+  | string
+  | {
+      message?: string;
+      response?: { data?: { error?: { message?: string }; message?: string } };
+    };

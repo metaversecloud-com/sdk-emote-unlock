@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100">
+  <!-- Box body with sketchy outline -->
+  <rect x="18" y="42" width="64" height="46" rx="2" fill="#D4A04A" stroke="#3D2B1F" stroke-width="2.5" stroke-linejoin="round"/>
+  <!-- Wood plank lines -->
+  <line x1="18" y1="58" x2="82" y2="57" stroke="#3D2B1F" stroke-width="1.2" stroke-linecap="round"/>
+  <line x1="18" y1="73" x2="82" y2="72" stroke="#3D2B1F" stroke-width="1.2" stroke-linecap="round"/>
+  <!-- Vertical plank divider -->
+  <line x1="50" y1="42" x2="50" y2="88" stroke="#3D2B1F" stroke-width="1" stroke-linecap="round" opacity="0.5"/>
+  <!-- Box lid - slightly crooked for sketch feel -->
+  <path d="M12 43 L14 32 L87 31 L88 42 Z" fill="#E8B84B" stroke="#3D2B1F" stroke-width="2.5" stroke-linejoin="round"/>
+  <!-- Lid highlight -->
+  <line x1="18" y1="35" x2="83" y2="34" stroke="#F5D78E" stroke-width="1.5" stroke-linecap="round" opacity="0.6"/>
+  <!-- Metal clasp -->
+  <rect x="42" y="36" width="16" height="10" rx="2" fill="#FFD700" stroke="#3D2B1F" stroke-width="2" stroke-linejoin="round"/>
+  <circle cx="50" cy="41" r="2" fill="#3D2B1F"/>
+  <!-- Question mark - hand drawn style -->
+  <path d="M43 60 Q43 52 50 52 Q57 52 57 58 Q57 62 50 64 L50 68" fill="none" stroke="#3D2B1F" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="50" cy="74" r="2.5" fill="#3D2B1F"/>
+  <!-- Sketch accents - small lines around box for emphasis -->
+  <line x1="8" y1="38" x2="13" y2="40" stroke="#3D2B1F" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="87" y1="38" x2="92" y2="36" stroke="#3D2B1F" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="10" y1="30" x2="13" y2="33" stroke="#3D2B1F" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="88" y1="28" x2="91" y2="31" stroke="#3D2B1F" stroke-width="1.5" stroke-linecap="round"/>
+  <!-- Small sparkle/star accents -->
+  <path d="M22 22 L23 18 L24 22 L28 23 L24 24 L23 28 L22 24 L18 23 Z" fill="#FFD700" stroke="#3D2B1F" stroke-width="0.8"/>
+  <path d="M76 18 L77 15 L78 18 L81 19 L78 20 L77 23 L76 20 L73 19 Z" fill="#FFD700" stroke="#3D2B1F" stroke-width="0.8"/>
+</svg>

@@ -9,13 +9,23 @@ export const handleGetEmoteUnlock = async (req: Request, res: Response) => {
     const droppedAsset = await getDroppedAsset(credentials);
     const dataObject = droppedAsset.dataObject;
 
-    const isEmoteUnlocked = dataObject?.stats?.successfulUnlocks[profileId];
+    // Backwards compatibility: detect unlock type
+    const unlockType = dataObject.unlockType || (dataObject.emoteId ? "emote" : null);
+    const itemId = dataObject.itemId || dataObject.emoteId;
+    const itemName = dataObject.itemName || dataObject.emoteName;
+    const itemDescription = dataObject.itemDescription || dataObject.emoteDescription;
+    const itemPreviewUrl = dataObject.itemPreviewUrl || dataObject.emotePreviewUrl;
+
+    const isItemUnlocked = dataObject?.stats?.successfulUnlocks[profileId];
 
     const visitor = await getVisitor(credentials);
 
-    //remove password for non-admin users
+    // Remove answer data for non-admin users
     const isAdmin = visitor.isAdmin;
-    if (!isAdmin) delete dataObject.password;
+    if (!isAdmin) {
+      delete dataObject.password;
+      delete dataObject.correctAnswers;
+    }
 
     visitor.updateDataObject(
       {},
@@ -24,11 +34,25 @@ export const handleGetEmoteUnlock = async (req: Request, res: Response) => {
       },
     );
 
+    // Determine default icon
+    const defaultIcon = unlockType === "accessory" ? `/default-accessory-icon.svg` : `/default-emote-icon.svg`;
+
     return res.json({
       unlockData: {
         ...dataObject,
-        isEmoteUnlocked,
-        emotePreviewUrl: dataObject.emotePreviewUrl || `/default-emote-icon.svg`,
+        // New fields (always present)
+        unlockType,
+        itemId,
+        itemName,
+        itemDescription,
+        itemPreviewUrl: itemPreviewUrl || defaultIcon,
+        isItemUnlocked,
+        // Legacy fields for backwards compatibility
+        emoteId: itemId,
+        emoteName: itemName,
+        emoteDescription: itemDescription,
+        emotePreviewUrl: itemPreviewUrl || defaultIcon,
+        isEmoteUnlocked: isItemUnlocked,
       },
       isAdmin,
       success: true,
@@ -37,7 +61,7 @@ export const handleGetEmoteUnlock = async (req: Request, res: Response) => {
     return errorHandler({
       error,
       functionName: "handleGetEmoteUnlock",
-      message: "Error getting emote unlock data",
+      message: "Error getting unlock data",
       req,
       res,
     });
