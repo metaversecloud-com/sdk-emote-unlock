@@ -1,15 +1,25 @@
 import { DroppedAsset } from "@rtsdk/topia";
 
 export interface IDroppedAsset extends DroppedAsset {
-  dataObject?: {
+  dataObject: {
     emoteId: string;
     emoteName: string;
     emotePreviewUrl: string;
     emoteDescription: string;
-    password: string;
+    password?: string;
+    unlockType?: string;
+    itemId?: string;
+    itemName?: string;
+    itemPreviewUrl?: string;
+    itemDescription?: string;
+    accessoryIds?: string[];
+    accessoryNames?: string[];
+    accessoryPreviewUrls?: string[];
+    packId?: string;
+    correctAnswers?: string[] | number[];
     stats: {
       attempts: number;
-      successfulUnlocks: {};
+      successfulUnlocks: { [profileId: string]: { unlockedAt: string; displayName?: string } };
     };
   };
 }

@@ -45,6 +45,7 @@ export type GameStateType = {
   isItemUnlocked?: boolean;
 
   // Accessory multi-select fields
+  packId?: string;
   accessoryIds?: string[];
   accessoryNames?: string[];
   accessoryPreviewUrls?: string[];

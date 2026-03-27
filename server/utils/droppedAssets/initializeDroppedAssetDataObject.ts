@@ -29,7 +29,7 @@ export const initializeDroppedAssetDataObject = async (droppedAsset: IDroppedAss
       const lockId = `${droppedAsset.id}-${timestamp}`;
 
       await droppedAsset
-        .setDataObject(unlockData, { lock: { lockId } })
+        .setDataObject(unlockData, { lock: { lockId, releaseLock: true } })
         .catch(() => console.warn("Unable to acquire lock, another process may be updating the data object"));
     }
 

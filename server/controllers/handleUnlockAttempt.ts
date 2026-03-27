@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { errorHandler, getCredentials, getDroppedAsset, getVisitor, Ecosystem } from "../utils/index.js";
 
-export const handleEmoteUnlockAttempt = async (req: Request, res: Response) => {
+export const handleUnlockAttempt = async (req: Request, res: Response) => {
   try {
     const credentials = getCredentials(req.query);
     const { displayName, profileId } = credentials;
@@ -39,23 +39,20 @@ export const handleEmoteUnlockAttempt = async (req: Request, res: Response) => {
       }
     }
 
-    // Increment attempts counter on every attempt (correct or incorrect)
-    await droppedAsset.updateDataObject({
+    // Build update payload to make a single updateDataObject call per path
+    const dataUpdate: Record<string, any> = {
       ["stats.attempts"]: (unlockData.stats.attempts || 0) + 1,
-    });
+    };
 
     if (!isCorrect) {
-      await droppedAsset.updateDataObject(
-        {},
-        {
-          analytics: [
-            {
-              analyticName: "false_responses",
-              uniqueKey: profileId,
-            },
-          ],
-        },
-      );
+      await droppedAsset.updateDataObject(dataUpdate, {
+        analytics: [
+          {
+            analyticName: "false_responses",
+            uniqueKey: profileId,
+          },
+        ],
+      });
 
       return res.status(400).json({
         success: false,
@@ -65,13 +62,11 @@ export const handleEmoteUnlockAttempt = async (req: Request, res: Response) => {
 
     // Store open_text responses for admin review
     if (questionType === "open_text" && password) {
-      await droppedAsset.updateDataObject({
-        [`stats.responses.${profileId}`]: {
-          displayName,
-          response: password.trim(),
-          respondedAt: new Date().toISOString(),
-        },
-      });
+      dataUpdate[`stats.responses.${profileId}`] = {
+        displayName,
+        response: password.trim(),
+        respondedAt: new Date().toISOString(),
+      };
     }
 
     const analytics = [
@@ -103,12 +98,12 @@ export const handleEmoteUnlockAttempt = async (req: Request, res: Response) => {
           .catch((error: any) =>
             errorHandler({
               error,
-              functionName: "handleEmoteUnlockAttempt",
+              functionName: "handleUnlockAttempt",
               message: "Error firing toast",
             }),
           );
 
-        await droppedAsset.updateDataObject({}, { analytics });
+        await droppedAsset.updateDataObject(dataUpdate, { analytics });
       } else {
         visitor
           .fireToast({
@@ -118,7 +113,7 @@ export const handleEmoteUnlockAttempt = async (req: Request, res: Response) => {
           .catch((error: any) =>
             errorHandler({
               error,
-              functionName: "handleEmoteUnlockAttempt",
+              functionName: "handleUnlockAttempt",
               message: "Error firing toast",
             }),
           );
@@ -126,7 +121,7 @@ export const handleEmoteUnlockAttempt = async (req: Request, res: Response) => {
         visitor.triggerParticle({ name: "Sparkle", duration: 3 }).catch((error: any) =>
           errorHandler({
             error,
-            functionName: "handleEmoteUnlockAttempt",
+            functionName: "handleUnlockAttempt",
             message: "Error triggering particle effects",
           }),
         );
@@ -136,12 +131,8 @@ export const handleEmoteUnlockAttempt = async (req: Request, res: Response) => {
           uniqueKey: profileId,
         });
 
-        await droppedAsset.updateDataObject(
-          {
-            [`stats.successfulUnlocks.${profileId}`]: { displayName, unlockedAt: new Date().toISOString() },
-          },
-          { analytics },
-        );
+        dataUpdate[`stats.successfulUnlocks.${profileId}`] = { displayName, unlockedAt: new Date().toISOString() };
+        await droppedAsset.updateDataObject(dataUpdate, { analytics });
       }
     } else if (unlockType === "accessory") {
       // ACCESSORY UNLOCK LOGIC
@@ -194,7 +185,7 @@ export const handleEmoteUnlockAttempt = async (req: Request, res: Response) => {
           .catch((error: any) =>
             errorHandler({
               error,
-              functionName: "handleEmoteUnlockAttempt",
+              functionName: "handleUnlockAttempt",
               message: "Error firing toast",
             }),
           );
@@ -202,7 +193,7 @@ export const handleEmoteUnlockAttempt = async (req: Request, res: Response) => {
         visitor.triggerParticle({ name: "Sparkle", duration: 3 }).catch((error: any) =>
           errorHandler({
             error,
-            functionName: "handleEmoteUnlockAttempt",
+            functionName: "handleUnlockAttempt",
             message: "Error triggering particle effects",
           }),
         );
@@ -212,12 +203,8 @@ export const handleEmoteUnlockAttempt = async (req: Request, res: Response) => {
           uniqueKey: profileId,
         });
 
-        await droppedAsset.updateDataObject(
-          {
-            [`stats.successfulUnlocks.${profileId}`]: { displayName, unlockedAt: new Date().toISOString() },
-          },
-          { analytics },
-        );
+        dataUpdate[`stats.successfulUnlocks.${profileId}`] = { displayName, unlockedAt: new Date().toISOString() };
+        await droppedAsset.updateDataObject(dataUpdate, { analytics });
       } catch (error: any) {
         const statusCode = error?.status || error?.statusCode;
         if (statusCode === 409) {
@@ -229,16 +216,16 @@ export const handleEmoteUnlockAttempt = async (req: Request, res: Response) => {
             .catch((toastError: any) =>
               errorHandler({
                 error: toastError,
-                functionName: "handleEmoteUnlockAttempt",
+                functionName: "handleUnlockAttempt",
                 message: "Error firing toast",
               }),
             );
 
-          droppedAsset.updateDataObject({}, { analytics });
+          await droppedAsset.updateDataObject(dataUpdate, { analytics });
         } else {
           return errorHandler({
             error,
-            functionName: "handleEmoteUnlockAttempt",
+            functionName: "handleUnlockAttempt",
             message: "Error granting accessory",
             req,
             res,
@@ -255,7 +242,7 @@ export const handleEmoteUnlockAttempt = async (req: Request, res: Response) => {
   } catch (error) {
     return errorHandler({
       error,
-      functionName: "handleEmoteUnlockAttempt",
+      functionName: "handleUnlockAttempt",
       message: "Error attempting to unlock item",
       req,
       res,

@@ -47,7 +47,7 @@ export const AdminView = () => {
   //form fields
   const [unlockType, setUnlockType] = useState<UnlockType>(gameState?.unlockType || "emote");
   const [selectedEmote, setSelectedEmote] = useState(gameState?.emoteId || "");
-  const [selectedPackId, setSelectedPackId] = useState("");
+  const [selectedPackId, setSelectedPackId] = useState(gameState?.packId || "");
   const [selectedAccessoryIds, setSelectedAccessoryIds] = useState<string[]>(gameState?.accessoryIds || []);
   const [itemDescription, setItemDescription] = useState(
     gameState?.itemDescription || gameState?.emoteDescription || "",
@@ -164,7 +164,7 @@ export const AdminView = () => {
     setAreButtonsDisabled(true);
 
     await backendAPI
-      .post("/emote-unlock/config", {
+      .post("/unlock/config", {
         unlockType,
         selectedEmote: unlockType === "emote" ? selectedEmoteObject : undefined,
         selectedAccessories: unlockType === "accessory" ? selectedAccessoryObjects : undefined,

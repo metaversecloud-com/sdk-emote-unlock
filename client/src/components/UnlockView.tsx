@@ -59,7 +59,7 @@ const StarIcon = () => (
   </svg>
 );
 
-const EmoteUnlockView = () => {
+export const UnlockView = () => {
   const dispatch = useContext(GlobalDispatchContext);
   const { gameState, profileId } = useContext(GlobalStateContext);
 
@@ -121,7 +121,7 @@ const EmoteUnlockView = () => {
         : { selectedAnswers };
 
     await backendAPI
-      .post("/emote-unlock/attempt", body)
+      .post("/unlock/attempt", body)
       .then((response) => {
         setGameState(dispatch, response.data.unlockData);
         setPassword("");
@@ -363,4 +363,4 @@ const EmoteUnlockView = () => {
   );
 };
 
-export default EmoteUnlockView;
+export default UnlockView;

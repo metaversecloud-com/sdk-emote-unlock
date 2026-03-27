@@ -53,7 +53,7 @@ export const handleGetUnlockables = async (req: Request, res: Response) => {
         .filter((acc) => acc.metadata?.packId === packId)
         .map((acc) => ({
           id: acc.id,
-          name: acc.name,
+          name: acc.metadata?.displayName || acc.name,
           category: acc.metadata?.category || "",
           previewUrl: acc.image_path || "/default-accessory-icon.svg",
         }));
