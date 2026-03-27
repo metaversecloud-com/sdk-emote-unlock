@@ -70,6 +70,14 @@ Emote Unlock enables admins to create password-protected challenges within Topia
 - **Toast Messages**: "Congrats! Emote Unlocked" or "Already Unlocked"
 - **S3 Storage**: Emote preview images stored in S3 bucket
 
+### Required Assets with Unique Names
+
+The app uses the following unique name patterns for managing dropped assets:
+
+| Unique Name Pattern | Description |
+| ------------------- | ----------- |
+| `Unlock_keyAsset`   | Key asset   |
+
 ## Environment Variables
 
 Create a `.env` file in the root directory. See `.env-example` for a template.

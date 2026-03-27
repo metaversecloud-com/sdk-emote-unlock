@@ -39,23 +39,20 @@ export const handleEmoteUnlockAttempt = async (req: Request, res: Response) => {
       }
     }
 
-    // Increment attempts counter on every attempt (correct or incorrect)
-    await droppedAsset.updateDataObject({
+    // Build update payload to make a single updateDataObject call per path
+    const dataUpdate: Record<string, any> = {
       ["stats.attempts"]: (unlockData.stats.attempts || 0) + 1,
-    });
+    };
 
     if (!isCorrect) {
-      await droppedAsset.updateDataObject(
-        {},
-        {
-          analytics: [
-            {
-              analyticName: "false_responses",
-              uniqueKey: profileId,
-            },
-          ],
-        },
-      );
+      await droppedAsset.updateDataObject(dataUpdate, {
+        analytics: [
+          {
+            analyticName: "false_responses",
+            uniqueKey: profileId,
+          },
+        ],
+      });
 
       return res.status(400).json({
         success: false,
@@ -65,13 +62,11 @@ export const handleEmoteUnlockAttempt = async (req: Request, res: Response) => {
 
     // Store open_text responses for admin review
     if (questionType === "open_text" && password) {
-      await droppedAsset.updateDataObject({
-        [`stats.responses.${profileId}`]: {
-          displayName,
-          response: password.trim(),
-          respondedAt: new Date().toISOString(),
-        },
-      });
+      dataUpdate[`stats.responses.${profileId}`] = {
+        displayName,
+        response: password.trim(),
+        respondedAt: new Date().toISOString(),
+      };
     }
 
     const analytics = [
@@ -108,7 +103,7 @@ export const handleEmoteUnlockAttempt = async (req: Request, res: Response) => {
             }),
           );
 
-        await droppedAsset.updateDataObject({}, { analytics });
+        await droppedAsset.updateDataObject(dataUpdate, { analytics });
       } else {
         visitor
           .fireToast({
@@ -136,12 +131,8 @@ export const handleEmoteUnlockAttempt = async (req: Request, res: Response) => {
           uniqueKey: profileId,
         });
 
-        await droppedAsset.updateDataObject(
-          {
-            [`stats.successfulUnlocks.${profileId}`]: { displayName, unlockedAt: new Date().toISOString() },
-          },
-          { analytics },
-        );
+        dataUpdate[`stats.successfulUnlocks.${profileId}`] = { displayName, unlockedAt: new Date().toISOString() };
+        await droppedAsset.updateDataObject(dataUpdate, { analytics });
       }
     } else if (unlockType === "accessory") {
       // ACCESSORY UNLOCK LOGIC
@@ -212,12 +203,8 @@ export const handleEmoteUnlockAttempt = async (req: Request, res: Response) => {
           uniqueKey: profileId,
         });
 
-        await droppedAsset.updateDataObject(
-          {
-            [`stats.successfulUnlocks.${profileId}`]: { displayName, unlockedAt: new Date().toISOString() },
-          },
-          { analytics },
-        );
+        dataUpdate[`stats.successfulUnlocks.${profileId}`] = { displayName, unlockedAt: new Date().toISOString() };
+        await droppedAsset.updateDataObject(dataUpdate, { analytics });
       } catch (error: any) {
         const statusCode = error?.status || error?.statusCode;
         if (statusCode === 409) {
@@ -234,7 +221,7 @@ export const handleEmoteUnlockAttempt = async (req: Request, res: Response) => {
               }),
             );
 
-          droppedAsset.updateDataObject({}, { analytics });
+          await droppedAsset.updateDataObject(dataUpdate, { analytics });
         } else {
           return errorHandler({
             error,
