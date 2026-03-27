@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { errorHandler, getCredentials, getDroppedAsset } from "../utils/index.js";
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 
-export const handleEmoteUnlockConfig = async (req: Request, res: Response) => {
+export const handleUnlockConfig = async (req: Request, res: Response) => {
   try {
     const credentials = getCredentials(req.query);
     const { profileId } = credentials;
@@ -92,6 +92,7 @@ export const handleEmoteUnlockConfig = async (req: Request, res: Response) => {
     } else {
       unlockData = {
         unlockType: "accessory",
+        packId: selectedPack?.id || "",
         accessoryIds: selectedAccessories.map((a: any) => a.id),
         accessoryNames: selectedAccessories.map((a: any) => a.name),
         accessoryPreviewUrls: selectedAccessories.map((a: any) => a.previewUrl || "/default-accessory-icon.svg"),
@@ -124,7 +125,7 @@ export const handleEmoteUnlockConfig = async (req: Request, res: Response) => {
   } catch (error) {
     return errorHandler({
       error,
-      functionName: "handleEmoteUnlockConfig",
+      functionName: "handleUnlockConfig",
       message: "Error saving unlock configuration",
       req,
       res,

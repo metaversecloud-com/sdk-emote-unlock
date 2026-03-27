@@ -40,7 +40,7 @@ Allows admins to configure an unlock challenge that grants avatar accessories in
 | `server/utils/droppedAssets/initializeDroppedAssetDataObject.ts` | Config detection now checks for `emoteId`, `itemId`, `accessoryIds`, or `unlockType` (not just `emoteId`). |
 | `client/src/context/types.ts` | Added `accessoryIds`, `accessoryNames`, `accessoryPreviewUrls` fields to `GameStateType`. Added `unlockType` field. |
 | `client/src/components/AdminView.tsx` | Unlock type selector (emote vs accessory). Accessory pack dropdown + multi-select checklist for individual accessories with select all/none. |
-| `client/src/components/EmoteUnlockView.tsx` | Renders multiple accessory preview images when `unlockType === "accessory"`. Dynamic text labels. Backwards-compatible field extraction (`itemId || emoteId`, etc.). |
+| `client/src/components/UnlockView.tsx` | Renders multiple accessory preview images when `unlockType === "accessory"`. Dynamic text labels. Backwards-compatible field extraction (`itemId || emoteId`, etc.). |
 | `client/public/default-accessory-icon.svg` | **New file.** SVG treasure box icon used as fallback for accessories without preview images. |
 | `package.json` | Updated `@rtsdk/topia` from `^0.15.8` to `^0.19.4` (required for `EcosystemFactory` and inventory APIs). |
 
@@ -80,7 +80,7 @@ A new question type (`open_text`) where any non-empty response grants the unlock
 | `server/controllers/handleEmoteUnlockAttempt.ts` | Added `open_text` branch: `isCorrect = !!(password && password.trim())`. Stores response text in `stats.responses.{profileId}` with displayName and timestamp. |
 | `server/controllers/handleEmoteUnlockConfig.ts` | Added `open_text` branch that skips password/options field generation (no answer validation needed). |
 | `client/src/components/AdminView.tsx` | Added "Open Response" option to question type dropdown. Shows info banner when selected ("Users can type anything. Every response grants the unlock."). Skips answer validation on save. Config summary shows "Any response" for the Answer field. Engagement section includes a Student Responses table (sorted newest-first) when `open_text` responses exist. |
-| `client/src/components/EmoteUnlockView.tsx` | Handles `open_text` like `text` for input rendering (with different placeholder: "Type your response..."). Sends response as `password` field in the API call. Default description changes to "Share your thoughts to unlock...". |
+| `client/src/components/UnlockView.tsx` | Handles `open_text` like `text` for input rendering (with different placeholder: "Type your response..."). Sends response as `password` field in the API call. Default description changes to "Share your thoughts to unlock...". |
 
 ---
 
@@ -145,7 +145,7 @@ A complete visual redesign targeting K-12 students (main challenge view) and tea
 | `client/index.html` | Replaced Quicksand + Open Sans font imports with Righteous + Albert Sans (with `preconnect` for performance). Updated page title to "Unlock Challenge". |
 | `client/tailwind.config.js` | Extended theme with custom `fontFamily` (display, body), full `colors` palette, custom `boxShadow` (card, glow, btn), and `keyframes`/`animation` definitions for all motion effects. |
 | `client/src/index.css` | Added CSS custom properties (`:root` variables), base styles (font-family, background on `html`/`body`), heading font overrides, all component classes listed above, background pattern styles, shake/confetti/loader keyframes, stagger utility, scrollbar styling, and SDK style overrides. |
-| `client/src/components/EmoteUnlockView.tsx` | Complete redesign: treasure-frame item previews with gold border glow, custom option cards with SVG check indicators (hidden native inputs), inline wrong-answer feedback banner with random encouraging messages + shake animation, CSS confetti celebration + star SVG on success, custom SVG lock icon for "not configured" state, themed stats badge, loading spinner in button. |
+| `client/src/components/UnlockView.tsx` | Complete redesign: treasure-frame item previews with gold border glow, custom option cards with SVG check indicators (hidden native inputs), inline wrong-answer feedback banner with random encouraging messages + shake animation, CSS confetti celebration + star SVG on success, custom SVG lock icon for "not configured" state, themed stats badge, loading spinner in button. |
 | `client/src/components/AdminView.tsx` | Redesigned with `.admin-section` cards for each form group, `.input-treasure` styled inputs/selects/textareas, custom SVG checkbox indicators for accessory selection, category pills, `.stat-card` engagement stats with Righteous font numbers, gold-tinted config summary card, SVG chevron for collapsible engagement section, inline SVG icons replacing text symbols. |
 | `client/src/components/PageContainer.tsx` | Added `min-h-screen`, `max-w-lg mx-auto` centering, conditional background classes (`bg-student` vs `bg-admin`), floating diamond decorative element, `.stagger-children` wrapper for content animation. Removed `headerText` rendering (title now in child components). |
 | `client/src/components/Loading.tsx` | Replaced external SDK spinner image with custom `.treasure-loader` CSS spinner. Added "Loading..." text in Righteous font. |

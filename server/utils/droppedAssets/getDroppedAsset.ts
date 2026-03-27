@@ -3,12 +3,12 @@ import { errorHandler } from "../errorHandler.js";
 import { DroppedAsset } from "../topiaInit.js";
 import { initializeDroppedAssetDataObject } from "./initializeDroppedAssetDataObject.js";
 
-export const getDroppedAsset = async (credentials: Credentials) => {
+export const getDroppedAsset = async (credentials: Credentials): Promise<IDroppedAsset> => {
   try {
     const { assetId, urlSlug } = credentials;
 
-    const droppedAsset = await DroppedAsset.get(assetId, urlSlug, { credentials });
-    await initializeDroppedAssetDataObject(droppedAsset as IDroppedAsset);
+    const droppedAsset = await DroppedAsset.get(assetId, urlSlug, { credentials }) as IDroppedAsset;
+    await initializeDroppedAssetDataObject(droppedAsset);
 
     if (!droppedAsset) throw "Dropped asset not found";
 

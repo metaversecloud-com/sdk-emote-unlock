@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { errorHandler, getCredentials, getDroppedAsset, getVisitor, Ecosystem } from "../utils/index.js";
 
-export const handleEmoteUnlockAttempt = async (req: Request, res: Response) => {
+export const handleUnlockAttempt = async (req: Request, res: Response) => {
   try {
     const credentials = getCredentials(req.query);
     const { displayName, profileId } = credentials;
@@ -98,7 +98,7 @@ export const handleEmoteUnlockAttempt = async (req: Request, res: Response) => {
           .catch((error: any) =>
             errorHandler({
               error,
-              functionName: "handleEmoteUnlockAttempt",
+              functionName: "handleUnlockAttempt",
               message: "Error firing toast",
             }),
           );
@@ -113,7 +113,7 @@ export const handleEmoteUnlockAttempt = async (req: Request, res: Response) => {
           .catch((error: any) =>
             errorHandler({
               error,
-              functionName: "handleEmoteUnlockAttempt",
+              functionName: "handleUnlockAttempt",
               message: "Error firing toast",
             }),
           );
@@ -121,7 +121,7 @@ export const handleEmoteUnlockAttempt = async (req: Request, res: Response) => {
         visitor.triggerParticle({ name: "Sparkle", duration: 3 }).catch((error: any) =>
           errorHandler({
             error,
-            functionName: "handleEmoteUnlockAttempt",
+            functionName: "handleUnlockAttempt",
             message: "Error triggering particle effects",
           }),
         );
@@ -185,7 +185,7 @@ export const handleEmoteUnlockAttempt = async (req: Request, res: Response) => {
           .catch((error: any) =>
             errorHandler({
               error,
-              functionName: "handleEmoteUnlockAttempt",
+              functionName: "handleUnlockAttempt",
               message: "Error firing toast",
             }),
           );
@@ -193,7 +193,7 @@ export const handleEmoteUnlockAttempt = async (req: Request, res: Response) => {
         visitor.triggerParticle({ name: "Sparkle", duration: 3 }).catch((error: any) =>
           errorHandler({
             error,
-            functionName: "handleEmoteUnlockAttempt",
+            functionName: "handleUnlockAttempt",
             message: "Error triggering particle effects",
           }),
         );
@@ -216,7 +216,7 @@ export const handleEmoteUnlockAttempt = async (req: Request, res: Response) => {
             .catch((toastError: any) =>
               errorHandler({
                 error: toastError,
-                functionName: "handleEmoteUnlockAttempt",
+                functionName: "handleUnlockAttempt",
                 message: "Error firing toast",
               }),
             );
@@ -225,7 +225,7 @@ export const handleEmoteUnlockAttempt = async (req: Request, res: Response) => {
         } else {
           return errorHandler({
             error,
-            functionName: "handleEmoteUnlockAttempt",
+            functionName: "handleUnlockAttempt",
             message: "Error granting accessory",
             req,
             res,
@@ -242,7 +242,7 @@ export const handleEmoteUnlockAttempt = async (req: Request, res: Response) => {
   } catch (error) {
     return errorHandler({
       error,
-      functionName: "handleEmoteUnlockAttempt",
+      functionName: "handleUnlockAttempt",
       message: "Error attempting to unlock item",
       req,
       res,

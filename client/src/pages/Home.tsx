@@ -1,8 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 
 // components
-import { PageContainer } from "@/components";
-import EmoteUnlockView from "@/components/EmoteUnlockView";
+import { PageContainer, UnlockView } from "@/components";
 
 // context
 import { GlobalDispatchContext, GlobalStateContext } from "@/context/GlobalContext";
@@ -20,7 +19,7 @@ const Home = () => {
   useEffect(() => {
     if (hasInteractiveParams) {
       backendAPI
-        .get("/emote-unlock")
+        .get("/game-state")
         .then((response) => {
           setGameState(dispatch, response.data.unlockData);
 
@@ -40,7 +39,7 @@ const Home = () => {
 
   return (
     <PageContainer isLoading={isLoading}>
-      <EmoteUnlockView />
+      <UnlockView />
     </PageContainer>
   );
 };

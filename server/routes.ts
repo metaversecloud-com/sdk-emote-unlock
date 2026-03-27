@@ -2,10 +2,10 @@ import express from "express";
 
 import { getVersion } from "./utils/getVersion.js";
 import {
-  handleEmoteUnlockAttempt,
-  handleEmoteUnlockConfig,
+  handleUnlockAttempt,
+  handleUnlockConfig,
   handleGetUnlockables,
-  handleGetEmoteUnlock,
+  handleGetGameState,
 } from "./controllers/index.js";
 
 const router = express.Router();
@@ -29,9 +29,9 @@ router.get("/system/health", (req, res) => {
   });
 });
 
-router.get("/emote-unlock", handleGetEmoteUnlock);
-router.post("/emote-unlock/attempt", handleEmoteUnlockAttempt);
-router.post("/emote-unlock/config", handleEmoteUnlockConfig);
+router.get("/game-state", handleGetGameState);
+router.post("/unlock/attempt", handleUnlockAttempt);
+router.post("/unlock/config", handleUnlockConfig);
 router.get("/unlockables", handleGetUnlockables);
 
 export default router;
