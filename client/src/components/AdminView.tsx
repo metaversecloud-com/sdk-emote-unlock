@@ -578,10 +578,19 @@ export const AdminView = () => {
                               : "Not set"}
                       </div>
                     </div>
-                    {gameState.unlockType === "accessory" && gameState.accessoryNames ? (
+                    {gameState.unlockType === "accessory" &&
+                    gameState.accessoryIds?.length &&
+                    gameState.ecosystemAccessories?.length ? (
                       <div className="col-span-2 bg-surface p-2.5 rounded-lg">
                         <div className="text-xs text-ink-soft">Accessories</div>
-                        <div className="text-sm font-semibold">{gameState.accessoryNames.join(", ")}</div>
+                        <div className="text-sm font-semibold">
+                          {gameState.accessoryIds
+                            .map((id) => {
+                              const acc = gameState.ecosystemAccessories!.find((a) => a.id === id);
+                              return acc?.name || "Unknown";
+                            })
+                            .join(", ")}
+                        </div>
                       </div>
                     ) : null}
                   </div>

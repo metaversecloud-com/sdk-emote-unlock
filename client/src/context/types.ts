@@ -35,6 +35,13 @@ export type ActionType = {
 
 export type QuestionType = "text" | "open_text" | "multiple_choice" | "all_that_apply";
 
+export type EcosystemAccessory = {
+  id: string;
+  name: string;
+  previewUrl: string;
+  category?: string;
+};
+
 export type GameStateType = {
   // New generic fields
   unlockType?: "emote" | "accessory";
@@ -47,8 +54,7 @@ export type GameStateType = {
   // Accessory multi-select fields
   packId?: string;
   accessoryIds?: string[];
-  accessoryNames?: string[];
-  accessoryPreviewUrls?: string[];
+  ecosystemAccessories?: EcosystemAccessory[];
 
   // Legacy fields (for backwards compatibility)
   emoteId?: string;

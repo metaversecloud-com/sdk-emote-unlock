@@ -13,8 +13,6 @@ export interface IDroppedAsset extends DroppedAsset {
     itemPreviewUrl?: string;
     itemDescription?: string;
     accessoryIds?: string[];
-    accessoryNames?: string[];
-    accessoryPreviewUrls?: string[];
     packId?: string;
     correctAnswers?: string[] | number[];
     stats: {

@@ -94,8 +94,6 @@ export const handleUnlockConfig = async (req: Request, res: Response) => {
         unlockType: "accessory",
         packId: selectedPack?.id || "",
         accessoryIds: selectedAccessories.map((a: any) => a.id),
-        accessoryNames: selectedAccessories.map((a: any) => a.name),
-        accessoryPreviewUrls: selectedAccessories.map((a: any) => a.previewUrl || "/default-accessory-icon.svg"),
         itemName: selectedPack?.name || "Accessories",
         itemDescription: itemDescription || "",
         itemPreviewUrl,

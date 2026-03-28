@@ -34,17 +34,21 @@ export const handleGetGameState = async (req: Request, res: Response) => {
       },
     );
 
-    // Resolve accessory display names from inventory cache
-    let accessoryNames = dataObject.accessoryNames;
+    // Resolve accessory details from inventory cache
+    let ecosystemAccessories: { id: string; name: string; previewUrl: string; category?: string }[] = [];
     if (unlockType === "accessory" && dataObject.accessoryIds?.length) {
       try {
         const allItems = await getCachedInventoryItems({ credentials });
-        accessoryNames = dataObject.accessoryIds.map((id: string) => {
-          const item = allItems.find((i: any) => i.id === id);
-          return item?.metadata?.displayName || item?.name || "Accessory";
-        });
+        ecosystemAccessories = allItems
+          .filter((i: any) => i.type === "ACCESSORY")
+          .map((i: any) => ({
+            id: i.id,
+            name: i.metadata?.displayName || i.name || "Accessory",
+            previewUrl: i.image_path || "/default-accessory-icon.svg",
+            category: i.metadata?.category || "",
+          }));
       } catch {
-        // Fall back to persisted names if cache fetch fails
+        // Fall back to empty array if cache fetch fails
       }
     }
 
@@ -54,7 +58,7 @@ export const handleGetGameState = async (req: Request, res: Response) => {
     return res.json({
       unlockData: {
         ...dataObject,
-        accessoryNames,
+        ecosystemAccessories,
         // New fields (always present)
         unlockType,
         itemId,
