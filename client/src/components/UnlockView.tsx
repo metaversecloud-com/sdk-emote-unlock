@@ -67,8 +67,15 @@ export const UnlockView = () => {
   const unlockType = gameState?.unlockType || "emote";
   const itemId = gameState?.itemId || gameState?.emoteId;
   const accessoryIds = gameState?.accessoryIds;
-  const accessoryNames = gameState?.accessoryNames;
-  const accessoryPreviewUrls = gameState?.accessoryPreviewUrls;
+  const ecosystemAccessories = gameState?.ecosystemAccessories;
+
+  // Resolve selected accessories by matching IDs against ecosystem items
+  const selectedAccessories = useMemo(() => {
+    if (!accessoryIds?.length || !ecosystemAccessories?.length) return [];
+    return accessoryIds
+      .map((id) => ecosystemAccessories.find((item) => item.id === id))
+      .filter(Boolean) as NonNullable<typeof ecosystemAccessories>;
+  }, [accessoryIds, ecosystemAccessories]);
   const itemDescription = gameState?.itemDescription || gameState?.emoteDescription;
   const itemPreviewUrl = gameState?.itemPreviewUrl || gameState?.emotePreviewUrl;
   const stats = gameState?.stats;
@@ -188,20 +195,20 @@ export const UnlockView = () => {
           style={shakeCard ? { animation: "shake 0.4s ease-in-out" } : undefined}
         >
           {/* Item preview */}
-          {isAccessory && accessoryPreviewUrls && accessoryPreviewUrls.length > 0 ? (
+          {isAccessory && selectedAccessories.length > 0 ? (
             <div className="flex flex-wrap gap-3 justify-center">
-              {accessoryPreviewUrls.map((url, i) => (
-                <div key={i} className="text-center">
+              {selectedAccessories.map((acc) => (
+                <div key={acc.id} className="text-center">
                   <div className="treasure-frame">
                     <div className="treasure-frame-inner">
                       <img
-                        src={url || defaultIcon}
-                        alt={accessoryNames?.[i] || "Accessory"}
+                        src={acc.previewUrl || defaultIcon}
+                        alt={acc.name}
                         className="w-16 h-16 object-contain"
                       />
                     </div>
                   </div>
-                  {accessoryNames?.[i] && <p className="text-xs mt-2 font-medium text-ink-soft">{accessoryNames[i]}</p>}
+                  <p className="text-xs mt-2 font-medium text-ink-soft">{acc.name}</p>
                 </div>
               ))}
             </div>
@@ -336,7 +343,7 @@ export const UnlockView = () => {
 
             <p className="text-sm text-ink-soft max-w-xs mx-auto leading-relaxed">
               {isAccessory
-                ? `You've unlocked ${accessoryNames?.length || 1} new accessor${(accessoryNames?.length || 1) === 1 ? "y" : "ies"}! Customize your avatar to use them. You may need to reload the page to check out your new accessories.`
+                ? `You've unlocked ${selectedAccessories.length || 1} new accessor${(selectedAccessories.length || 1) === 1 ? "y" : "ies"}! Customize your avatar to use them. You may need to reload the page to check out your new accessories.`
                 : "You've unlocked this emote. Click on your avatar to use it!"}
             </p>
           </div>
