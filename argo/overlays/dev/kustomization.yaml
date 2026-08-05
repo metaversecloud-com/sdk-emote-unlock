@@ -26,4 +26,4 @@ patches:
 images:
   - name: emunlock0
     newName: 368076259134.dkr.ecr.us-east-1.amazonaws.com/sdk-example
-    digest: sha256:b73f71828259d03a9760d04314ac32f3742a5313352d3bb114f8507bdff2402a
+    digest: sha256:f1af212771bba7360f7f4a98c47333bdbe8026d2a8deeda037efaee647cd74b9
