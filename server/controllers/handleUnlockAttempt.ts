@@ -4,7 +4,7 @@ import { errorHandler, getCredentials, getDroppedAsset, getVisitor, Ecosystem } 
 export const handleUnlockAttempt = async (req: Request, res: Response) => {
   try {
     const credentials = getCredentials(req.query);
-    const { displayName, profileId } = credentials;
+    const { displayName, profileId, urlSlug } = credentials;
     const { password, selectedAnswers } = req.body;
 
     const droppedAsset = await getDroppedAsset(credentials);
@@ -49,7 +49,9 @@ export const handleUnlockAttempt = async (req: Request, res: Response) => {
         analytics: [
           {
             analyticName: "false_responses",
+            profileId,
             uniqueKey: profileId,
+            urlSlug,
           },
         ],
       });
@@ -72,7 +74,9 @@ export const handleUnlockAttempt = async (req: Request, res: Response) => {
     const analytics = [
       {
         analyticName: "completions",
+        profileId,
         uniqueKey: profileId,
+        urlSlug,
       },
     ];
 
@@ -128,7 +132,9 @@ export const handleUnlockAttempt = async (req: Request, res: Response) => {
 
         analytics.push({
           analyticName: "emote_granted",
+          profileId,
           uniqueKey: profileId,
+          urlSlug,
         });
 
         dataUpdate[`stats.successfulUnlocks.${profileId}`] = { displayName, unlockedAt: new Date().toISOString() };
@@ -200,7 +206,9 @@ export const handleUnlockAttempt = async (req: Request, res: Response) => {
 
         analytics.push({
           analyticName: "accessory_granted",
+          profileId,
           uniqueKey: profileId,
+          urlSlug,
         });
 
         dataUpdate[`stats.successfulUnlocks.${profileId}`] = { displayName, unlockedAt: new Date().toISOString() };

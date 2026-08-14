@@ -4,7 +4,7 @@ import { errorHandler, getCredentials, getDroppedAsset, getVisitor, getCachedInv
 export const handleGetGameState = async (req: Request, res: Response) => {
   try {
     const credentials = getCredentials(req.query);
-    const { profileId } = credentials;
+    const { profileId, urlSlug } = credentials;
 
     const droppedAsset = await getDroppedAsset(credentials);
     const dataObject = droppedAsset.dataObject;
@@ -30,7 +30,7 @@ export const handleGetGameState = async (req: Request, res: Response) => {
     visitor.updateDataObject(
       {},
       {
-        analytics: [{ analyticName: "starts", uniqueKey: profileId }],
+        analytics: [{ analyticName: "starts", profileId, urlSlug, uniqueKey: profileId }],
       },
     );
 
