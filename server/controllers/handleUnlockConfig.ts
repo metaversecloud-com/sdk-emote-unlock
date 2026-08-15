@@ -5,7 +5,7 @@ import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 export const handleUnlockConfig = async (req: Request, res: Response) => {
   try {
     const credentials = getCredentials(req.query);
-    const { profileId } = credentials;
+    const { profileId, urlSlug } = credentials;
     const { unlockType, selectedEmote, selectedAccessories, unlockCondition, itemDescription, selectedPack } = req.body;
 
     const droppedAsset = await getDroppedAsset(credentials);
@@ -110,6 +110,7 @@ export const handleUnlockConfig = async (req: Request, res: Response) => {
         {
           analyticName: "new_configurations",
           uniqueKey: profileId,
+          urlSlug,
         },
       ],
     });
