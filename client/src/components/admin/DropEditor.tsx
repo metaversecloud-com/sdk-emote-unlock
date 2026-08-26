@@ -53,10 +53,12 @@ export const DropEditor = ({ dropId, onBack, onDone }: { dropId?: string; onBack
   const [password, setPassword] = useState("");
   const [options, setOptions] = useState<string[]>(["", ""]);
   const [correctAnswers, setCorrectAnswers] = useState<number[]>([]);
-  const [alwaysAvailable, setAlwaysAvailable] = useState(true);
+  // New-drop defaults: a scheduled, teased drop is the common case. Editing an existing drop
+  // overwrites all of these from the saved record below, so these only apply when dropId is absent.
+  const [alwaysAvailable, setAlwaysAvailable] = useState(false);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  const [showInUpcoming, setShowInUpcoming] = useState(false);
+  const [showInUpcoming, setShowInUpcoming] = useState(true);
   const [upcomingDisplay, setUpcomingDisplay] = useState<UpcomingDisplay>("item");
 
   useEffect(() => {
