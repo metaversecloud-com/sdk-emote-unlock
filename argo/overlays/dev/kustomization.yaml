@@ -26,5 +26,5 @@ patches:
 images:
   - name: emunlock0
     newName: 368076259134.dkr.ecr.us-east-1.amazonaws.com/sdk-example
-    digest: sha256:a91f7a2054a0b82c7d130b3987e883a52c673a05bd746f3d2a56986285a24620
+    digest: sha256:de50ae180bee6bb0138b2a11c62c1d49ae4d92dbadf4f319a131d0367a9045dd
     newTag: sdk-emote-unlock
