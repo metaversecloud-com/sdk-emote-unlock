@@ -37,7 +37,7 @@ Access via the gear icon in `PageContainer` — visible only when `visitor.isAdm
 - **Question / Description** — free-text prompt shown to visitors.
 - **Question Type** — one of `text`, `open_text`, `multiple_choice`, `all_that_apply`. Switching type resets the answer fields.
 - **Answer fields** — text input (single answer), option builder (2+ options, at least one marked correct via a green checkmark button), or nothing (for `open_text`).
-- **Engagement panel** — collapsible summary that shows: current configuration (type, item, question type, answer), attempt/unlock counts, and — for `open_text` — a table of every student response (`displayName`, response text, sorted by `respondedAt` desc).
+- **Engagement panel** — collapsible summary that shows: current configuration (type, item, question type, answer), attempt/unlock counts, and — for `open_text` — a table of every response (`displayName`, response text, sorted by `respondedAt` desc).
 - **Force refresh** — appending `?forceRefreshInventory=true` to the iframe URL calls `/unlockables` with a cache-busting flag; the 6-hour in-memory `inventoryCache` is cleared on that request.
 
 ## Required Assets with Unique Names
